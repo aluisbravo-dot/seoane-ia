@@ -1,0 +1,6 @@
+/* Punto de entrada CSS de SeoaIA. Mantiene el orden para no romper estilos existentes. */
+@import url("tokens.css");
+@import url("base.css");
+@import url("modules.css");
+
+@import url("automation.css");

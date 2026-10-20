@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balotario y Ética - IESTP M. Seoane Corrales</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#061329">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="img/icon.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><img src="img/icon.svg" alt="Logo" width="36" height="36"><span class="brand-title">IESTP M. Seoane Corrales</span></a>
+      <nav class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="index.html#seccion-ia">Asistente IA</a>
+        <a href="mercado-laboral.html">Mercado laboral e IA</a>
+        <a href="padres.html">Guía para padres</a>
+        <a href="balotario.html" class="active">Balotario y Ética</a>
+      </nav>
+      <button id="theme-toggle" class="btn-icon" title="Cambiar Tema"><i class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <h1><i class="fa-solid fa-book-open"></i> Balotario de estudio y Ética</h1>
+      <p>Preguntas y respuestas de Ética y realidad nacional, Comunicación, Empresas, IA y de cada carrera.</p>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="filters-bar">
+      <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="balotario-buscar" placeholder="Buscar una pregunta o tema (ej. LMP, MYPE, ética)..."></div>
+      <div class="category-buttons" id="balotario-filtros"></div>
+    </div>
+    <div id="balotario-lista"></div>
+    <p class="aviso"><i class="fa-solid fa-circle-info"></i> Material de estudio general basado en los temas de los sílabos. Para el contenido oficial, sigue a tu docente y el sílabo de tu curso.</p>
+  </section>
+
+  <footer class="footer"><div class="footer-bottom"><p>&copy; 2026 IESTP "Manuel Seoane Corrales" | Proyecto estudiantil no oficial · Datos oficiales en <a href="https://seoane.edu.pe" target="_blank" rel="noopener" style="color:inherit;">seoane.edu.pe</a></p></div></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/carreras.js"></script>
+  <script src="js/conocimiento.js"></script>
+  <script src="js/personajes.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

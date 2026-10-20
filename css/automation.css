@@ -1,0 +1,20 @@
+
+/* SeoaIA v20 · Centro de automatización académica */
+.automation-section{scroll-margin-top:100px}
+.automation-grid{display:grid;grid-template-columns:minmax(280px,.85fr) minmax(320px,1.15fr);gap:1.25rem;align-items:stretch}
+.automation-form,.automation-result-panel{background:var(--surface,rgba(255,255,255,.04));border:1px solid var(--border,rgba(148,163,184,.22));border-radius:18px;padding:clamp(1rem,2vw,1.5rem);min-width:0}
+.automation-form{display:flex;flex-direction:column;gap:.65rem}
+.automation-form label{font-weight:650;font-size:.92rem;margin-top:.25rem}
+.automation-form select,.automation-form input,.automation-form textarea{width:100%;font:inherit;color:var(--text,#e5e7eb);background:var(--bg-card,#0b1730);border:1px solid var(--border,rgba(148,163,184,.28));border-radius:10px;padding:.75rem;min-width:0}
+.automation-form textarea{resize:vertical;min-height:120px}
+.automation-fields{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.automation-fields>div{min-width:0}.automation-actions{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:.7rem}
+.automation-note{font-size:.82rem;color:var(--text-muted,#94a3b8);line-height:1.5;margin:.25rem 0 0}
+.automation-result-panel{display:flex;flex-direction:column;min-height:450px}
+.automation-result-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--border,rgba(148,163,184,.2));padding-bottom:.8rem}
+.automation-result-head h3{margin:.25rem 0 0}.automation-status{font-size:.78rem;padding:.3rem .6rem;border-radius:999px;background:rgba(16,185,129,.12);color:#34d399;white-space:nowrap}
+.automation-status.busy{background:rgba(245,158,11,.12);color:#fbbf24}.automation-status.error{background:rgba(239,68,68,.12);color:#fca5a5}
+.automation-result{flex:1;overflow-wrap:anywhere;line-height:1.7;padding:1rem 0;min-height:260px}.automation-result h1,.automation-result h2,.automation-result h3{margin:.7rem 0}.automation-result pre{white-space:pre-wrap;overflow:auto}.automation-empty{display:grid;place-items:center;text-align:center;min-height:250px;color:var(--text-muted,#94a3b8);gap:.75rem}.automation-empty i{font-size:2.2rem;color:var(--accent,#60a5fa)}
+.automation-saved{margin-top:1rem;padding:1rem;border-radius:12px;background:rgba(59,130,246,.08);font-size:.9rem;white-space:pre-wrap}.automation-saved button{margin-top:.5rem}
+@media(max-width:850px){.automation-grid{grid-template-columns:1fr}.automation-result-panel{min-height:360px}}
+@media(max-width:480px){.automation-fields{grid-template-columns:1fr}.automation-actions .btn{flex:1}}

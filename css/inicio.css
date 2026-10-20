@@ -1,0 +1,63 @@
+/* SeoaIA v20: tema anime institucional, suave y legible. */
+@import url("style.css");
+:root{--primary:#24549A;--primary-dark:#0B1F3A;--secondary:#55BCEB;--accent:#E7C86A;--bg-dark:#F5F7FA;--bg-card:#FFFFFF;--text-light:#243247;--text-muted:#63748A;--border-color:#D9E2EE;--shadow:0 8px 24px rgba(11,31,58,.10);--radius:14px}
+body{background:#F5F7FA;color:#243247}
+.navbar{background:rgba(255,255,255,.97);border-bottom:1px solid #D9E2EE;box-shadow:0 3px 14px rgba(11,31,58,.07)}
+.brand,.brand-title,.nav-links a{color:#0B1F3A}
+.brand-sub,.section-title p,.carrera-desc,.carrera-meta{color:#63748A}
+.nav-links a:hover{color:#24549A}
+.hero.dashboard-hero{background:linear-gradient(125deg,#0B1F3A 0%,#173D70 54%,#24549A 100%);color:#F5F7FA}
+.hero h1,.hero-copy-panel h1{color:#FFFFFF}
+.hero h2,.hero-copy-panel h2{color:#EAF5FF}
+.section-title h2,.carrera-title{color:#0B1F3A}
+.hero p,.hero-lead{color:#E0EAF7}
+.btn-primary,.btn-primary:visited,.btn{background:#24549A;color:#fff;border-color:#24549A}
+.btn-primary:hover,.btn:hover{background:#0B1F3A;border-color:#0B1F3A}
+.btn-secondary,.card-btn{background:#EAF5FC;color:#0B1F3A;border-color:#BBDDF0}
+.card,.carrera-card,.padres-card,.mini-card,.announcements-card,.automation-form,.automation-result-panel,.acordeon{background:#fff;color:#243247;border-color:#D9E2EE;box-shadow:0 8px 24px rgba(11,31,58,.08)}
+.badge,.tag{background:#FFF8DE;color:#0B1F3A;border-color:#E7C86A}
+.bg-alt{background:#EDF3F9}
+footer,.footer{background:#0B1F3A;color:#fff}
+footer a,.footer a{color:#FFE9A6}
+/* Avatar clicable, voz opcional y enlaces de navegación secundarios */
+.hero-mascot-trigger{position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:8px;border:2px solid rgba(217,185,91,.7);border-radius:28px;padding:12px;background:linear-gradient(145deg,#fff,#eaf0f8);cursor:pointer;box-shadow:0 12px 28px rgba(41,72,115,.13);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.hero-mascot-trigger:hover,.hero-mascot-trigger:focus-visible{transform:translateY(-3px);border-color:#D9B95B;box-shadow:0 16px 32px rgba(41,72,115,.18)}
+.hero-mascot-trigger .hero-mascot{display:block;max-width:min(100%,270px);height:auto;object-fit:contain}
+.mascot-tap-hint{color:#294873;font-size:.82rem;font-weight:700}
+.hero-mascot-trigger.is-speaking{animation:seoaia-speaking 1s ease-in-out infinite alternate;border-color:#355B91}
+@keyframes seoaia-speaking{from{box-shadow:0 0 0 0 rgba(53,91,145,.12)}to{box-shadow:0 0 0 10px rgba(53,91,145,.10)}}
+.mascot-voice-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;max-width:340px;margin:10px auto 0}
+#mascot-voice-status{display:block;flex-basis:100%;color:#687386;font-size:.78rem;text-align:center}
+#mascot-voice-toggle[aria-pressed=true]{background:#F8F1D9;border-color:#D9B95B;color:#294873}
+.carrera-char,.modal-char{cursor:pointer;transition:transform .2s ease,filter .2s ease}
+.carrera-char:hover,.modal-char:hover{transform:translateY(-2px) scale(1.04);filter:drop-shadow(0 5px 8px rgba(41,72,115,.16))}
+.sidebar-extra-links{display:grid;gap:5px;padding:12px 10px;border-top:1px solid #DCE2EA;border-bottom:1px solid #DCE2EA}
+.sidebar-extra-links a{display:flex;gap:9px;align-items:center;padding:8px 10px;border-radius:8px;color:#294873;font-size:.88rem}
+.sidebar-extra-links a:hover{background:#EAF0F8}
+@media(prefers-reduced-motion:reduce){.hero-mascot-trigger,.carrera-char,.modal-char{transition:none}.hero-mascot-trigger.is-speaking{animation:none}}
+
+/* Ajustes finales SeoaIA v20: portada limpia, contraste y adaptación móvil. */
+:root{--primary:#1769d2;--primary-dark:#0b1f3a;--secondary:#55bceb;--accent:#e7c86a;--bg-dark:#f5f7fa;--bg-card:#fff;--text-light:#243247;--text-muted:#63748a;--border-color:#d9e2ee;--shadow:0 10px 28px rgba(11,31,58,.10);--radius:18px}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{background:#f5f7fa;color:#243247}
+.hero.dashboard-hero{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(125deg,#071a36 0%,#10396c 55%,#1769d2 100%)}
+.dashboard-hero-bg{position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 72% 28%,rgba(85,188,235,.28),transparent 34%),linear-gradient(110deg,rgba(6,20,44,.42),rgba(11,31,58,.08))}
+.hero-mascot-panel{min-width:0}
+.hero-mascot-trigger{max-width:100%;border-radius:24px;border-color:rgba(231,200,106,.75);background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(234,245,252,.96));box-shadow:0 18px 45px rgba(0,0,0,.2)}
+.hero-mascot-trigger .hero-mascot{width:clamp(180px,22vw,270px);max-height:360px;object-fit:contain}
+.hero-mascot-trigger:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #55bceb;outline-offset:3px}
+.navbar{background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid #d9e2ee;box-shadow:0 4px 18px rgba(11,31,58,.08)}
+.brand-title,.nav-links a{color:#0b1f3a}
+.nav-links a:hover{color:#1769d2}
+.btn-primary,.btn-primary:visited{background:linear-gradient(110deg,#1769d2,#0c84f5);border-color:#1769d2;color:#fff;box-shadow:0 8px 20px rgba(23,105,210,.22)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(23,105,210,.3)}
+.card,.carrera-card,.mini-card,.announcements-card,.chat-wrapper{border-radius:18px}
+.carrera-card img,.carrera-char img,.modal-char img{object-fit:cover}
+#chat-avatar,.avatar{overflow:hidden;border-radius:50%;border:2px solid #d7eafb;background:#eaf5fc}
+.seoaia-avatar{width:100%;height:100%;object-fit:cover;object-position:center 24%;border-radius:50%}
+footer,.footer{background:linear-gradient(120deg,#071a36,#0b2b52);color:#fff}
+#mascot-voice-toggle[aria-pressed=true]{background:#e5f8f3;border-color:#70d7bd;color:#075e50}
+#mascot-voice-status{line-height:1.45}
+@media(max-width:900px){.hero-mascot-trigger .hero-mascot{width:min(56vw,230px);max-height:300px}.dashboard-main{gap:18px}.announcements-card{max-width:100%}}
+@media(max-width:640px){.navbar .nav-links{gap:8px}.hero-mascot-trigger{padding:8px}.hero-mascot-trigger .hero-mascot{width:min(62vw,210px);max-height:260px}.hero-feature-row{gap:8px}.hero-actions{flex-wrap:wrap}.hero-actions .btn{width:100%;justify-content:center}.mascot-voice-controls{width:100%}.seoaia-sidebar{display:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

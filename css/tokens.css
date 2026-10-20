@@ -1,0 +1,18 @@
+/* Paleta institucional anime SeoaIA v20: marino, azul Seoane, celeste, blanco y dorado suave. */
+:root {
+  --seoaia-navy: #0B1F3A;
+  --seoaia-blue: #24549A;
+  --seoaia-cyan: #55BCEB;
+  --seoaia-gold: #E7C86A;
+  --primary: var(--seoaia-blue);
+  --primary-dark: #0B1F3A;
+  --secondary: var(--seoaia-cyan);
+  --accent: var(--seoaia-gold);
+  --bg-dark: #F5F7FA;
+  --bg-card: #FFFFFF;
+  --text-light: #243247;
+  --text-muted: #63748A;
+  --border-color: #D9E2EE;
+  --shadow: 0 18px 48px rgba(11, 31, 58, .12);
+  --radius: 18px;
+}

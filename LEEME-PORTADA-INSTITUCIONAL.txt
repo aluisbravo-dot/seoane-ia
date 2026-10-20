@@ -1,0 +1,7 @@
+SeoaIA v20 - cambios incluidos
+- Portada con paleta azul, blanco y dorado suave.
+- Se agregaron páginas de navegación carreras.html, biblioteca.html y proyectos.html.
+- Voz de bienvenida opcional mediante SpeechSynthesis del navegador. El usuario debe activarla y tocar la mascota.
+- Los avatares de carrera reproducen una frase breve si la voz está activada.
+- Sin claves API ni credenciales incluidas.
+- La IA en la nube depende de la configuración de Render y sus variables de entorno.

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía para Padres de Familia - IESTP M. Seoane Corrales</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#061329">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="img/icon.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><img src="img/icon.svg" alt="Logo" width="36" height="36"><span class="brand-title">IESTP M. Seoane Corrales</span></a>
+      <nav class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="index.html#seccion-ia">Asistente IA</a>
+        <a href="mercado-laboral.html">Mercado laboral e IA</a>
+        <a href="padres.html" class="active">Guía para padres</a>
+        <a href="balotario.html">Balotario y Ética</a>
+      </nav>
+      <button id="theme-toggle" class="btn-icon" title="Cambiar Tema"><i class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <h1><i class="fa-solid fa-people-roof"></i> Guía para Padres de Familia</h1>
+      <p>Respuestas claras y honestas: gratuidad, empleo, inteligencia artificial y si cada carrera le conviene a su hijo/a.</p>
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2 class="h-sec">Preguntas frecuentes</h2>
+    <div id="padres-faq"></div>
+  </section>
+  <section class="section container">
+    <h2 class="h-sec">¿Le conviene esta carrera a mi hijo/a?</h2>
+    <p class="mu">Cada tarjeta explica para quién es la carrera y para quién no. Con los sílabos oficiales que tenemos (V semestre 2025-I).</p>
+    <div id="padres-carreras-grid" class="padres-grid"></div>
+    <p class="aviso"><i class="fa-solid fa-circle-info"></i> Es una orientación general, no una decisión por su hijo/a. Lo mejor es conversar, hacer juntos el <a href="index.html#seccion-quiz">Test Vocacional</a> y visitar el instituto. ¿Más dudas? Pregúntele a <a href="index.html#seccion-ia">SeoaneBot IA</a>.</p>
+  </section>
+
+  <footer class="footer"><div class="footer-bottom"><p>&copy; 2026 IESTP "Manuel Seoane Corrales" | Proyecto estudiantil no oficial · Datos oficiales en <a href="https://seoane.edu.pe" target="_blank" rel="noopener" style="color:inherit;">seoane.edu.pe</a></p></div></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/carreras.js"></script>
+  <script src="js/conocimiento.js"></script>
+  <script src="js/personajes.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

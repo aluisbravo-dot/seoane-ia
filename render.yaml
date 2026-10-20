@@ -1,0 +1,20 @@
+# Despliegue en Render (Blueprint). Las claves se ponen en el panel de Render, NO aquí.
+services:
+  - type: web
+    name: seoanebot-ia
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/status
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: PROVIDER_ORDER
+        value: anthropic,openai,gemini,deepseek

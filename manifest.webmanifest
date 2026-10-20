@@ -1,0 +1,16 @@
+{
+  "name": "SeoaIA · IESTP Manuel Seoane Corrales",
+  "short_name": "IESTP Seoane",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "description": "Aplicación Web Institucional del IESTP Manuel Seoane Corrales - 7 Carreras Técnicas Gratuitas",
+  "icons": [
+    {
+      "src": "img/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

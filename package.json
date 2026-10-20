@@ -1,0 +1,15 @@
+{
+  "name": "seoaia-instituto",
+  "version": "20.0.0",
+  "description": "SeoaIA v20: plataforma institucional con chat IA, voz, páginas informativas y consulta de sílabos",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "pdf-parse": "1.1.1"
+  }
+}

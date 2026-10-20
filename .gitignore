@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.DS_Store
+SeoaIA-v20-ANIME-INSTITUCIONAL-VOZ-FEMENINA-PREPARADO.zip
+*.zip
