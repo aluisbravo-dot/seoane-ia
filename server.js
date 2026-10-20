@@ -101,7 +101,7 @@ async function llamarGemini({ system, msgs, files }) {
     if (f.kind === 'text') last.parts.unshift({ text: `Archivo "${f.name}":\n${f.data}` });
     else last.parts.unshift({ inlineData: { mimeType: f.media_type, data: f.data } });
   }
-  const model = E.GEMINI_MODEL || 'gemini-2.5-flash';
+  const model = E.GEMINI_MODEL || 'gemini-3.8-flash';
   const j = await post(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, { 'x-goog-api-key': E.GEMINI_API_KEY },
     { systemInstruction: { parts: [{ text: system }] }, contents });
   return ((j.candidates && j.candidates[0] && j.candidates[0].content.parts) || []).map(p => p.text || '').join('\n');
@@ -146,7 +146,7 @@ http.createServer((req, res) => {
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
   if (req.method === 'POST' && req.url === '/api/chat') return chat(req, res);
   if (req.method === 'GET' && req.url.startsWith('/api/silabos')) { const u=new URL(req.url,'http://localhost'); const q=u.searchParams.get('q')||''; const career=u.searchParams.get('career')||''; const semester=u.searchParams.get('semester')||''; const turn=u.searchParams.get('turn')||''; return buscarSilabos(q,career,semester,turn,false).then(results=>json(res,200,{total:silabos.length,results:results.map(({score,...x})=>x),pdfTextSearchAvailable:!!pdfParse})); }
-  if (req.method === 'GET' && req.url === '/api/status') return json(res, 200, { ai: disponibles().length > 0, providers: disponibles().map(p => PROVEEDORES[p].nombre), syllabiFiles: silabos.length, pdfTextSearchAvailable: !!pdfParse });
+  if (req.method === 'GET' && req.url.split('?')[0] === '/api/status') return json(res, 200, { ai: disponibles().length > 0, providers: disponibles().map(p => PROVEEDORES[p].nombre), syllabiFiles: silabos.length, pdfTextSearchAvailable: !!pdfParse });
   let p = decodeURIComponent(req.url.split('?')[0]); if (p === '/') p = '/index.html'; if (RUTAS[p]) p = RUTAS[p];
   const f = path.join(__dirname, path.normalize(p));
   if (!f.startsWith(__dirname) || /(^|[\\/])(\.env|\.git|server\.js|package\.json|node_modules)([\\/]|$)/.test(p)) { res.writeHead(403); return res.end('No permitido'); }
