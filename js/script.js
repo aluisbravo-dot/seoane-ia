@@ -124,12 +124,18 @@ async function enviarChat(texto) {
   chatHistory.push({ role: "user", content: (texto || "Analiza el archivo adjunto.") + (nombres.length ? "\n[Adjuntos: " + nombres.join(", ") + "]" : "") });
   const adj = chatFiles; chatFiles = []; pintarAdjuntos();
   const typing = addMsg("<p>SeoaIA está preparando una respuesta…</p>", "bot"); $("chat-send").disabled = true;
-  const r = await responder({ messages: chatHistory, texto, files: adj, career: chatCarrera, onToken: t => { typing.innerHTML = md(t); $("chat-box").scrollTop = $("chat-box").scrollHeight; } });
-  typing.innerHTML = (r.html ? r.text : md(r.text)) + `<small class="via">${r.via}</small>`;
-  if ($("voice-read")?.checked) hablarRespuesta(r.text);
-  if (/(?:qui[eé]n(?:es)? (?:te )?(?:cre[oó]|desarroll[oó]|program[oó]|diseñ[oó]|hicieron|crearon)|(?:qui[eé]n|cu[aá]les son) (?:son )?(?:tus )?(?:creadores|desarrolladores|autores)|tus creadores|equipo creador|personas que te crearon|qui[eé]n est[aá] detr[aá]s de ti|de d[oó]nde vienes|origen de seoaia)/i.test(texto || "")) mostrarEquipoCreador();
-  chatHistory.push({ role: "assistant", content: r.html ? "[imagen generada]" : r.text });
-  $("chat-send").disabled = false; $("chat-box").scrollTop = $("chat-box").scrollHeight;
+  try {
+    const r = await responder({ messages: chatHistory, texto, files: adj, career: chatCarrera, onToken: t => { typing.innerHTML = md(t); $("chat-box").scrollTop = $("chat-box").scrollHeight; } });
+    typing.innerHTML = (r.html ? r.text : md(r.text)) + `<small class="via">${r.via}</small>`;
+    if ($("voice-read")?.checked) hablarRespuesta(r.text);
+    if (/(?:qui[eé]n(?:es)? (?:te )?(?:cre[oó]|desarroll[oó]|program[oó]|diseñ[oó]|hicieron|crearon)|(?:qui[eé]n|cu[aá]les son) (?:son )?(?:tus )?(?:creadores|desarrolladores|autores)|tus creadores|equipo creador|personas que te crearon|qui[eé]n est[aá] detr[aá]s de ti|de d[oó]nde vienes|origen de seoaia)/i.test(texto || "")) mostrarEquipoCreador();
+    chatHistory.push({ role: "assistant", content: r.html ? "[imagen generada]" : r.text });
+  } catch (e) {
+    if (chatHistory.length && chatHistory[chatHistory.length - 1].role === "user") chatHistory.pop();
+    typing.innerHTML = `<p role="alert">⚠️ ${esc(e.message || "No se pudo obtener una respuesta de la IA.")}</p>`;
+  } finally {
+    $("chat-send").disabled = false; $("chat-box").scrollTop = $("chat-box").scrollHeight;
+  }
 }
 function pintarAdjuntos() {
   const c = $("chat-adjuntos"); if (!c) return; c.innerHTML = "";
@@ -247,7 +253,13 @@ function initChat() {
     p.hidden = true; bajar.disabled = false; bajar.innerHTML = '<i class="fa-solid fa-download"></i> Descargar IA local'; pintaEstado();
   };
   window.addEventListener("online", pintaEstado); window.addEventListener("offline", pintaEstado);
-  (typeof fetch === "function" ? fetch(API() + "/api/status") : Promise.reject()).then(r => r.json()).then(j => { IA.nube = j.ai; IA.proveedores = j.providers || []; }).catch(() => {}).finally(pintaEstado);
+  (typeof fetch === "function" ? fetch(API() + "/api/status") : Promise.reject()).then(async r => {
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+    IA.nube = j.configured === true; IA.proveedores = j.providers || []; IA.error = j.error || null;
+  }).catch(() => {
+    IA.nube = false; IA.error = "no se pudo consultar el servidor";
+  }).finally(pintaEstado);
   const guardado = LS.get("modeloLocal");
   if (guardado && navigator.gpu) { if ($("chat-modelo")) $("chat-modelo").value = guardado; cargarLocal(guardado).then(pintaEstado).catch(() => {}); }
   addMsg(bienvenida(), "bot"); actualizarAvatarChat();

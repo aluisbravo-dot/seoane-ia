@@ -1,10 +1,10 @@
 // =====================================================================
 // SEOANEBOT IA - motor con 3 niveles (elige solo el mejor disponible):
-//   1) NUBE   -> servidor (Claude, ChatGPT/OpenAI, Gemini, DeepSeek u otro compatible)
+//   1) NUBE   -> servidor (Groq y proveedores alternativos configurados)
 //   2) LOCAL  -> modelo pequeño dentro del navegador (se descarga una vez; luego sin internet)
 //   3) BASE   -> conocimiento incluido en la web (siempre funciona, sin internet)
 // =====================================================================
-const IA = { modo: "auto", motor: null, cargando: false, nube: false, proveedores: [], modelo: null };
+const IA = { modo: "auto", motor: null, cargando: false, nube: false, proveedores: [], error: null, modelo: null };
 const MODELOS = { ligero: "Qwen2.5-0.5B-Instruct-q4f16_1-MLC", mejor: "Qwen2.5-1.5B-Instruct-q4f16_1-MLC" };
 const MOTIVO = { esperando: false, hecho: false };
 const API = () => (window.SEOANE_API || "").replace(/\/$/, "");
@@ -27,9 +27,18 @@ async function cargarLocal(clave, onProg) {
 }
 
 async function viaNube({ messages, career, files }) {
-  const r = await fetch(API() + "/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages, career: career ? career.nombre : "", files }) });
-  const j = await r.json(); if (!r.ok) throw new Error(j.error || "error de la nube");
+  let r;
+  try {
+    r = await fetch(API() + "/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages, career: career ? career.nombre : "", files }) });
+  } catch (e) {
+    throw new Error("No se pudo conectar con el servidor de IA. Comprueba la conexión y la dirección del servidor.");
+  }
+  let j;
+  try { j = await r.json(); }
+  catch (e) { throw new Error("El servidor de IA devolvió una respuesta no válida."); }
+  if (!r.ok) throw new Error(j.error || `El servidor de IA respondió con HTTP ${r.status}.`);
+  if (typeof j.reply !== "string" || !j.reply.trim()) throw new Error("Groq no devolvió una respuesta con contenido.");
   return { text: j.reply, via: "☁️ IA en la nube" + (j.provider ? " (" + j.provider + ")" : "") };
 }
 async function viaLocal({ messages, career, files, onToken }) {
@@ -43,13 +52,31 @@ async function viaLocal({ messages, career, files, onToken }) {
 }
 
 async function generar(o) {
-  const orden = IA.modo === "auto" ? ["nube", "local", "base"] : IA.modo === "base" ? ["base"] : [IA.modo, "base"];
+  const orden = IA.modo === "auto" ? ["nube", "local", "base"] : IA.modo === "base" ? ["base"] : IA.modo === "nube" ? ["nube"] : [IA.modo, "base"];
+  let errorNube = "";
   for (const m of orden) {
     try {
-      if (m === "nube" && IA.nube && navigator.onLine) return await viaNube(o);
-      if (m === "local" && IA.motor) return await viaLocal(o);
-      if (m === "base") return { text: avisoAdjuntos(o.files) + responderBase(o.texto, o.career), via: "📚 Base sin conexión" };
-    } catch (e) { console.warn(m, e); }
+      if (m === "nube") {
+        if (!navigator.onLine) throw new Error("No hay conexión a internet para contactar con Groq.");
+        return await viaNube(o);
+      }
+      if (m === "local" && IA.motor) {
+        const respuesta = await viaLocal(o);
+        if (errorNube) respuesta.text = `⚠️ No se pudo conectar con la IA en la nube: ${errorNube}\n\nSe responde con el modelo local, no con Groq.\n\n${respuesta.text}`;
+        return respuesta;
+      }
+      if (m === "base") {
+        const respuesta = { text: avisoAdjuntos(o.files) + responderBase(o.texto, o.career), via: "📚 Base sin conexión" };
+        if (errorNube) respuesta.text = `⚠️ No se pudo conectar con la IA en la nube: ${errorNube}\n\nSe responde con la base local, no con Groq.\n\n${respuesta.text}`;
+        return respuesta;
+      }
+    } catch (e) {
+      console.warn(m, e);
+      if (m === "nube") {
+        errorNube = e.message || "Error desconocido de la conexión con Groq.";
+        if (IA.modo === "nube") throw e;
+      }
+    }
   }
   return { text: avisoAdjuntos(o.files) + responderBase(o.texto, o.career), via: "📚 Base sin conexión" };
 }
@@ -104,7 +131,7 @@ async function responder(o) {
 function pintaEstado() {
   const el = document.getElementById("ia-estado"); if (!el) return;
   const prov = IA.proveedores.length ? " (" + IA.proveedores.join(", ") + ")" : "";
-  const n = IA.nube && navigator.onLine ? "☁️ Nube: lista" + prov : "☁️ Nube: no disponible";
+  const n = IA.nube && navigator.onLine ? "☁️ Nube: configurada; conexión no comprobada" + prov : "☁️ Nube: " + (navigator.onLine ? IA.error || "no disponible" : "sin conexión");
   const l = IA.motor ? "💻 Local: lista" : IA.cargando ? "💻 Local: cargando…" : "💻 Local: sin descargar";
-  el.innerHTML = `${n} · ${l} · 📚 Base: siempre lista`;
+  el.textContent = `${n} · ${l} · 📚 Base: siempre lista`;
 }

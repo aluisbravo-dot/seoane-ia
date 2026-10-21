@@ -8,13 +8,9 @@ services:
     startCommand: node server.js
     healthCheckPath: /api/status
     envVars:
-      - key: ANTHROPIC_API_KEY
+      - key: GROQ_API_KEY
         sync: false
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: DEEPSEEK_API_KEY
-        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
       - key: PROVIDER_ORDER
-        value: anthropic,openai,gemini,deepseek
+        value: groq

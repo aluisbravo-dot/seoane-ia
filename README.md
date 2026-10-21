@@ -18,7 +18,7 @@ Esta es la carpeta del proyecto web. El documento Word de revisión y exposició
 - Health Check Path: `/api/status`
 
 ## Variables de entorno
-Configura en Render únicamente las claves que correspondan al proveedor que usarás: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, y las opciones de modelo/proveedor descritas en `server.js`. No pongas claves reales en GitHub, HTML, JavaScript ni documentos. Usa `.env.example` como referencia y nunca publiques `.env`.
+In Render, open the web service, go to **Environment**, and add `GROQ_API_KEY` with your GroqCloud API key. Keep it as a server-side environment variable; never put the key in GitHub, HTML, JavaScript, or documents. The configured model is `openai/gpt-oss-120b`; verify that it is available to your account using Groq's authenticated model catalog at `https://api.groq.com/openai/v1/models`, and set `GROQ_MODEL` in Render if you need to select another model from that list. `/api/status` reports configuration only, not a verified Groq connection; send a chat request to test the connection.
 
 ## Estructura principal
 - `index.html`: página principal institucional.

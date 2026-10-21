@@ -1,7 +1,7 @@
 // =====================================================================
 // SERVIDOR (sin dependencias, solo Node 18+). Sirve la web y conecta la IA.
-// Proveedores: Claude (Anthropic), ChatGPT (OpenAI), Gemini (Google), DeepSeek
-// y "custom" (cualquier API compatible con OpenAI: OpenRouter, Groq, Ollama local...).
+// Proveedores: Groq (preferido), Claude (Anthropic), ChatGPT (OpenAI),
+// Gemini (Google), DeepSeek y APIs compatibles con OpenAI.
 // Si uno falla o no tiene saldo, prueba automáticamente con el siguiente.
 // =====================================================================
 const http = require('http'), fs = require('fs'), path = require('path'), vm = require('vm');
@@ -25,13 +25,14 @@ const real = v => v && !/^pega_|^tu_clave|^xxx/i.test(v);
 
 // ---- proveedores ----
 const PROVEEDORES = {
+  groq:      { nombre: 'Groq', ok: () => real(E.GROQ_API_KEY), llamar: llamarGroq },
   anthropic: { nombre: 'Claude', ok: () => real(E.ANTHROPIC_API_KEY), llamar: llamarAnthropic },
   openai:    { nombre: 'ChatGPT', ok: () => real(E.OPENAI_API_KEY), llamar: (a) => llamarOpenAI(a, 'https://api.openai.com/v1', E.OPENAI_API_KEY, E.OPENAI_MODEL || 'gpt-4o-mini', true) },
   gemini:    { nombre: 'Gemini', ok: () => real(E.GEMINI_API_KEY), llamar: llamarGemini },
   deepseek:  { nombre: 'DeepSeek', ok: () => real(E.DEEPSEEK_API_KEY), llamar: (a) => llamarOpenAI(a, 'https://api.deepseek.com', E.DEEPSEEK_API_KEY, E.DEEPSEEK_MODEL || 'deepseek-chat', false) },
   custom:    { nombre: E.CUSTOM_NAME || 'Otro', ok: () => !!E.CUSTOM_BASE_URL && !!E.CUSTOM_MODEL, llamar: (a) => llamarOpenAI(a, E.CUSTOM_BASE_URL, E.CUSTOM_API_KEY || 'sin-clave', E.CUSTOM_MODEL, false) }
 };
-const ORDEN = (E.PROVIDER_ORDER || 'anthropic,openai,gemini,deepseek,custom').split(',').map(s => s.trim()).filter(s => PROVEEDORES[s]);
+const ORDEN = (E.PROVIDER_ORDER || 'groq').split(',').map(s => s.trim()).filter(s => PROVEEDORES[s]);
 const disponibles = () => ORDEN.filter(p => PROVEEDORES[p].ok());
 
 // ---- conocimiento del instituto (se lee de js/carreras.js: una sola fuente de datos) ----
@@ -56,9 +57,20 @@ ${conocimiento()}`;
 
 // ---- llamadas ----
 async function post(url, headers, body) {
-  const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(body), signal: AbortSignal.timeout(Number(E.AI_TIMEOUT_MS) || 45000) });
+  let r;
+  try {
+    r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(body), signal: AbortSignal.timeout(Number(E.AI_TIMEOUT_MS) || 45000) });
+  } catch (e) {
+    if (e.name === 'TimeoutError' || e.name === 'AbortError') throw new Error('Tiempo de espera agotado al comunicarse con el proveedor de IA.');
+    if (e instanceof TypeError) throw new Error('No se pudo establecer conexión con el proveedor de IA. Comprueba la conexión del servidor.');
+    throw e;
+  }
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error((j.error && (j.error.message || j.error)) || ('HTTP ' + r.status));
+  if (!r.ok) {
+    const error = new Error((j.error && (j.error.message || j.error)) || ('HTTP ' + r.status));
+    error.status = r.status;
+    throw error;
+  }
   return j;
 }
 const NOTA_ADJ = f => ({ type: 'text', text: `[No puedo leer el adjunto "${f.name}" con este modelo]` });
@@ -92,7 +104,18 @@ async function llamarOpenAI({ system, msgs, files }, base, key, model, vision) {
     last.content = [...b, { type: 'text', text: last.content }];
   }
   const j = await post(base.replace(/\/$/, '') + '/chat/completions', { authorization: 'Bearer ' + key }, { model, messages: m, max_tokens: 1800 });
-  return j.choices[0].message.content;
+  return j.choices?.[0]?.message?.content || '';
+}
+async function llamarGroq(args) {
+  const model = E.GROQ_MODEL || 'openai/gpt-oss-120b';
+  try {
+    return await llamarOpenAI(args, 'https://api.groq.com/openai/v1', E.GROQ_API_KEY, model, false);
+  } catch (e) {
+    if (e.status === 401 || e.status === 403) throw new Error('Groq rechazó GROQ_API_KEY. Revisa que la clave del servidor sea válida y tenga acceso a GroqCloud.');
+    if (e.status === 429) throw new Error('Groq alcanzó un límite de solicitudes o de uso. Revisa los límites y la cuota de tu cuenta e inténtalo más tarde.');
+    if (e.status === 400 && /model/i.test(e.message)) throw new Error(`Groq no acepta el modelo "${model}". Revisa los modelos habilitados para tu cuenta en https://api.groq.com/openai/v1/models y configura GROQ_MODEL.`);
+    throw new Error(`Groq no pudo completar la solicitud${e.status ? ` (HTTP ${e.status})` : ''}: ${e.message}`);
+  }
 }
 async function llamarGemini({ system, msgs, files }) {
   const contents = msgs.map(x => ({ role: x.role === 'assistant' ? 'model' : 'user', parts: [{ text: x.content }] }));
@@ -119,7 +142,7 @@ async function chat(req, res) {
   for await (const c of req) { body += c; if (body.length > 25e6) return json(res, 413, { error: 'Archivo demasiado grande' }); }
   let d; try { d = JSON.parse(body); } catch { return json(res, 400, { error: 'JSON inválido' }); }
   const prov = disponibles();
-  if (!prov.length) return json(res, 503, { error: 'No hay ninguna clave de IA configurada (.env)' });
+  if (!prov.length) return json(res, 503, { error: 'Falta configurar GROQ_API_KEY en las variables privadas del servidor.' });
   const msgs = (d.messages || []).slice(-20).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content || '').slice(0, 8000) }));
   if (!msgs.length || msgs[msgs.length - 1].role !== 'user') return json(res, 400, { error: 'Falta el mensaje' });
   const files = Array.isArray(d.files) ? d.files.slice(0, 4) : [];
@@ -130,10 +153,11 @@ async function chat(req, res) {
   for (const p of prov) {
     try {
       const reply = await PROVEEDORES[p].llamar({ system, msgs, files });
-      if (reply) return json(res, 200, { reply, provider: PROVEEDORES[p].nombre });
+      if (typeof reply === 'string' && reply.trim()) return json(res, 200, { reply, provider: PROVEEDORES[p].nombre });
+      ultimoError = `${PROVEEDORES[p].nombre}: el proveedor devolvió una respuesta vacía.`;
     } catch (e) { ultimoError = `${PROVEEDORES[p].nombre}: ${e.message}`; console.warn('Falló', ultimoError); }
   }
-  json(res, 502, { error: ultimoError || 'La IA no respondió' });
+  json(res, 502, { error: ultimoError || 'La IA no respondió con contenido.' });
 }
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.gif': 'image/gif', '.ico': 'image/x-icon', '.pdf': 'application/pdf' };
@@ -146,7 +170,11 @@ http.createServer((req, res) => {
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
   if (req.method === 'POST' && req.url === '/api/chat') return chat(req, res);
   if (req.method === 'GET' && req.url.startsWith('/api/silabos')) { const u=new URL(req.url,'http://localhost'); const q=u.searchParams.get('q')||''; const career=u.searchParams.get('career')||''; const semester=u.searchParams.get('semester')||''; const turn=u.searchParams.get('turn')||''; return buscarSilabos(q,career,semester,turn,false).then(results=>json(res,200,{total:silabos.length,results:results.map(({score,...x})=>x),pdfTextSearchAvailable:!!pdfParse})); }
-  if (req.method === 'GET' && req.url.split('?')[0] === '/api/status') return json(res, 200, { ai: disponibles().length > 0, providers: disponibles().map(p => PROVEEDORES[p].nombre), syllabiFiles: silabos.length, pdfTextSearchAvailable: !!pdfParse });
+  if (req.method === 'GET' && req.url.split('?')[0] === '/api/status') {
+    const providers = disponibles().map(p => PROVEEDORES[p].nombre);
+    const configured = providers.length > 0;
+    return json(res, 200, { ai: false, configured, connection: 'not_checked', providers, error: configured ? null : 'No hay proveedores de IA configurados en las variables privadas del servidor.', syllabiFiles: silabos.length, pdfTextSearchAvailable: !!pdfParse });
+  }
   let p = decodeURIComponent(req.url.split('?')[0]); if (p === '/') p = '/index.html'; if (RUTAS[p]) p = RUTAS[p];
   const f = path.join(__dirname, path.normalize(p));
   if (!f.startsWith(__dirname) || /(^|[\\/])(\.env|\.git|server\.js|package\.json|node_modules)([\\/]|$)/.test(p)) { res.writeHead(403); return res.end('No permitido'); }
@@ -156,5 +184,5 @@ http.createServer((req, res) => {
   });
 }).listen(PORT, () => {
   const d = disponibles();
-  console.log(`\n✅ Abre en tu navegador: http://localhost:${PORT}\n   IA en la nube: ${d.length ? 'SÍ → ' + d.map(p => PROVEEDORES[p].nombre).join(', ') : 'NO (falta una clave en .env; igual funcionan la base sin conexión y la IA local)'}\n`);
+  console.log(`\n✅ Abre en tu navegador: http://localhost:${PORT}\n   IA en la nube: ${d.length ? 'configurada, conexión no comprobada → ' + d.map(p => PROVEEDORES[p].nombre).join(', ') : 'no configurada (igual funcionan la base sin conexión y la IA local)'}\n`);
 });
