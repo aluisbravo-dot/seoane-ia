@@ -58,7 +58,7 @@
       <a href="mercado-laboral.html"><i class="fa-solid fa-chart-line"></i><span>Empleo</span></a>
       <a href="#contacto"><i class="fa-solid fa-location-dot"></i><span>Contacto</span></a>
     </nav>
-    <div class="sidebar-extra-links"><a href="carreras.html"><i class="fa-solid fa-graduation-cap"></i> Explorar carreras</a><a href="biblioteca.html"><i class="fa-solid fa-book-open"></i> Biblioteca académica</a><a href="proyectos.html"><i class="fa-solid fa-lightbulb"></i> Proyectos</a></div><div class="sidebar-institute"><img src="img/escudo-referencia.png" alt="Escudo del instituto"><strong>IESTP Manuel Seoane Corrales</strong><small>San Juan de Lurigancho · Lima</small><a href="https://seoane.edu.pe" target="_blank" rel="noopener">Portal oficial <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+    <div class="sidebar-extra-links"><a href="carreras.html"><i class="fa-solid fa-graduation-cap"></i> Explorar carreras</a><a href="biblioteca.html"><i class="fa-solid fa-book-open"></i> Biblioteca académica</a><a href="proyectos.html"><i class="fa-solid fa-lightbulb"></i> Proyectos</a></div><div class="sidebar-institute"><strong>IESTP Manuel Seoane Corrales</strong><small>San Juan de Lurigancho · Lima</small><a href="https://seoane.edu.pe" target="_blank" rel="noopener">Portal oficial <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
   </aside>
 
   <!-- SeoaIA institutional dashboard -->
@@ -67,10 +67,9 @@
     <div class="dashboard-main">
       <div class="hero-mascot-panel"><button type="button" class="hero-mascot-trigger" id="seoaia-mascot-trigger" aria-label="Escuchar bienvenida de SeoaIA" title="Pulsa para escuchar la bienvenida"><img src="img/seoaia-mascota.png" alt="Mascota de SeoaIA, asistente de inteligencia artificial" class="hero-mascot"><span class="mascot-tap-hint"><i class="fa-solid fa-volume-high"></i> Toca para escuchar</span></button><div class="mascot-status"><span></span> SeoaIA está lista para ayudarte</div><div class="mascot-voice-controls"><button type="button" id="mascot-voice-toggle" class="btn btn-secondary" aria-pressed="false"><i class="fa-solid fa-volume-xmark"></i> Voz desactivada</button><span id="mascot-voice-status" role="status" aria-live="polite">Activa la voz si deseas escuchar a SeoaIA.</span></div></div>
       <div class="hero-copy-panel">
-        <div class="institution-line"><img src="img/escudo-referencia.png" alt="Escudo de referencia del instituto"><span>INSTITUTO DE EDUCACIÓN SUPERIOR<br><strong>MANUEL SEOANE CORRALES</strong><small>SAN JUAN DE LURIGANCHO · LIMA, PERÚ</small></span></div>
         <span class="badge"><i class="fa-solid fa-sparkles"></i> ASISTENTE ACADÉMICO CON IA</span>
         <h1>SeoaIA<span class="hero-bot-mark"><i class="fa-solid fa-robot"></i></span></h1>
-        <h2>Tu asistente virtual del Instituto Manuel Seoane Corrales</h2>
+        <h2>Tu asistente académico</h2>
         <p class="hero-lead">Consulta sílabos, aprende temas difíciles, organiza tus proyectos y encuentra orientación académica en un solo lugar.</p>
         <div class="hero-feature-row"><span><i class="fa-solid fa-file-circle-check"></i> Consultas de sílabos</span><span><i class="fa-solid fa-graduation-cap"></i> Apoyo académico</span><span><i class="fa-solid fa-calendar-days"></i> Orientación institucional</span></div>
         <div class="hero-actions"><a href="#seccion-ia" class="btn btn-primary"><i class="fa-solid fa-comments"></i> Conversar con SeoaIA</a><a href="#carreras" class="btn btn-secondary"><i class="fa-solid fa-compass"></i> Explorar carreras</a></div>
@@ -88,7 +87,7 @@
       </div>
       <div class="chat-wrapper">
         <div class="chat-header">
-          <div class="avatar" id="chat-avatar"><img src="img/seoaia-mascota.png" alt="SeoaIA" class="seoaia-avatar"></div>
+          <div class="avatar" id="chat-avatar" role="img" aria-label="Asistente SeoaIA"><i class="fa-solid fa-robot chat-avatar-icon" aria-hidden="true"></i></div>
           <div class="chat-title">
             <strong>SeoaIA · Asistente IA</strong>
             <span class="status-online" id="ia-estado">Cargando estado…</span>
@@ -107,7 +106,7 @@
         <div class="chat-suggestions" aria-label="Consultas sugeridas"><button type="button" data-prompt="¿Qué cursos contiene mi sílabo?">Consultar sílabos</button><button type="button" data-prompt="Explícame un tema paso a paso">Explicar un tema</button><button type="button" data-prompt="Ayúdame a organizar un proyecto académico">Ayuda con proyectos</button><button type="button" data-prompt="¿Qué trámites institucionales puedo consultar?">Trámites</button></div>
         <div class="chat-chips" id="chat-chips"></div>
         <div class="chat-chips" id="chat-adjuntos"></div>
-        <div class="chat-voice-tools" aria-label="Controles de voz"><button type="button" id="voice-start" class="chip" title="Hablar con SeoaIA"><i class="fa-solid fa-microphone"></i> Hablar</button><button type="button" id="voice-stop" class="chip" title="Detener escucha" disabled><i class="fa-solid fa-stop"></i> Detener</button><label class="voice-read-toggle"><input type="checkbox" id="voice-read" checked> Leer respuestas en voz alta</label><span id="voice-status" role="status" aria-live="polite">Voz lista si tu navegador la admite</span></div>
+        <div class="chat-voice-tools" aria-label="Controles de voz"><button type="button" id="voice-start" class="chip" title="Hablar con SeoaIA"><i class="fa-solid fa-microphone"></i> Hablar</button><button type="button" id="voice-stop" class="chip" title="Detener escucha" disabled><i class="fa-solid fa-stop"></i> Detener</button><label class="voice-read-toggle"><input type="checkbox" id="voice-read" checked> Leer respuestas en voz alta</label><button type="button" id="voice-reference-play" class="chip" title="Reproducir el audio original enviado" aria-pressed="false"><i class="fa-solid fa-headphones"></i> Audio enviado</button><audio id="voice-reference-audio" preload="none" src="voz/voz-referencia.mp3"></audio><span id="voice-status" role="status" aria-live="polite">Voz lista si tu navegador la admite</span></div>
         <div class="chat-input-area">
           <label class="clip" title="Adjuntar foto, PDF o texto"><i class="fa-solid fa-paperclip"></i><input type="file" id="chat-file" multiple hidden accept="image/*,.pdf,.txt,.md,.csv,.json"></label>
           <input type="text" id="chat-input" placeholder="Escribe tu consulta (ej. ¿Le conviene Química Industrial a mi hijo?, 1+1, ¿cómo postulo?)" autocomplete="off">
@@ -326,7 +325,7 @@
   </footer>
 
 
-  <a href="#seccion-ia" class="chat-fab" title="Hablar con SeoaIA"><img src="img/seoaia-mascota.png" alt=""><span>Hablar con SeoaIA</span></a>
+  <a href="#seccion-ia" class="chat-fab" title="Hablar con SeoaIA"><i class="fa-solid fa-robot" aria-hidden="true"></i><span>Hablar con SeoaIA</span></a>
   <div id="aviso-archivo" class="aviso-archivo" hidden>⚠️ Abriste la página como archivo. Todo funciona, pero la IA en la nube necesita el servidor: usa <b>npm start</b> (http://localhost:3000) o publícala en internet.</div>
   <script>if (location.protocol === "file:") document.getElementById("aviso-archivo").hidden = false;</script>
   <script src="js/config.js"></script>

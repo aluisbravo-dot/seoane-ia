@@ -1,0 +1,4 @@
+AUDIO ORIGINAL ENVIADO POR EL USUARIO
+voz-referencia.mp3 es el audio conectado al botón «Audio enviado» del portal.
+power_chainsaw_man.mp3 es una copia con nombre identificable del mismo archivo.
+Nota: reproducir un audio de referencia no cambia automáticamente la voz TTS del navegador. Para que las respuestas habladas imiten esa voz se necesita un servicio de síntesis/clonación de voz compatible y autorizado, configurado en el backend.

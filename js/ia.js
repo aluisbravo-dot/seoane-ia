@@ -96,7 +96,7 @@ function respuestaMotivo(texto) {
 }
 
 
-// ---- Generación de imágenes ("dibuja ...") con un servicio gratuito externo (Pollinations) ----
+// ---- Generación de imágenes externa mediante el endpoint público de Pollinations ----
 const PIDE_IMAGEN = /^\s*(dibuja|dibújame|genera (una )?imagen( de)?|crea (una )?imagen( de)?|imagen de)\s+(.+)/i;
 const IMG_PROHIBIDO = /(desnud|sexual|porn|erotic|gore|sangre|violaci|suicid|arma|bomba|droga|nazi)/i;
 function pedirImagen(texto) {
@@ -106,7 +106,7 @@ function pedirImagen(texto) {
   if (!navigator.onLine) return { html: false, text: "Para generar imágenes necesito internet. Intenta de nuevo cuando estés en línea.", via: "🎨 Imágenes" };
   const url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(tema + ", digital art, detailed") + "?width=768&height=480&nologo=true";
   const safe = tema.replace(/[<>&"']/g, "");
-  return { html: true, text: `<p>🎨 <b>Imagen generada:</b> <i>${safe}</i></p><img class="gen-img" src="${url}" alt="${safe}" loading="lazy"><p><small>Generada con un servicio externo gratuito de IA; puede tardar unos segundos y el resultado varía.</small></p>`, via: "🎨 Generación de imágenes" };
+  return { html: true, text: `<p>🎨 <b>Solicitando imagen:</b> <i>${safe}</i></p><img class="gen-img" src="${url}" alt="${safe}" loading="lazy"><p class="gen-img-status" role="status">Esperando la respuesta del servicio externo; su disponibilidad y límites dependen del proveedor.</p>`, via: "🎨 Generación de imágenes (Pollinations)" };
 }
 
 async function responder(o) {

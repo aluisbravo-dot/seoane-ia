@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const seguro = f => { try { f(); } catch (e) { console.warn("Error en", f.name, e); } };
   seguro(() => renderCarreras(CARRERAS_DATA));
   seguro(initMascotVoice);
-  [initFilters, initSearch, initModal, initChat, initQuiz, initTheme, renderPadres, renderMercado, renderBalotario, registerSW].forEach(seguro);
+  [initFilters, initSearch, initModal, initChat, initAudioReferencia, initQuiz, initTheme, renderPadres, renderMercado, renderBalotario, registerSW].forEach(seguro);
 });
 
 // ---------- Carreras ----------
@@ -115,7 +115,7 @@ function addMsg(html, who) {
 function actualizarAvatarChat() {
   const av = $("chat-avatar"); if (!av) return;
   if (chatCarrera) montarPersonaje(av, chatCarrera);
-  else av.innerHTML = '<img src="img/seoaia-mascota.png" alt="Mascota de SeoaIA" class="seoaia-avatar">';
+  else av.innerHTML = '<i class="fa-solid fa-robot chat-avatar-icon" aria-hidden="true"></i>';
 }
 async function enviarChat(texto) {
   if (!texto && !chatFiles.length) return;
@@ -129,7 +129,29 @@ async function enviarChat(texto) {
     typing.innerHTML = (r.html ? r.text : md(r.text)) + `<small class="via">${r.via}</small>`;
     if ($("voice-read")?.checked) hablarRespuesta(r.text);
     if (/(?:qui[eé]n(?:es)? (?:te )?(?:cre[oó]|desarroll[oó]|program[oó]|diseñ[oó]|hicieron|crearon)|(?:qui[eé]n|cu[aá]les son) (?:son )?(?:tus )?(?:creadores|desarrolladores|autores)|tus creadores|equipo creador|personas que te crearon|qui[eé]n est[aá] detr[aá]s de ti|de d[oó]nde vienes|origen de seoaia)/i.test(texto || "")) mostrarEquipoCreador();
-    chatHistory.push({ role: "assistant", content: r.html ? "[imagen generada]" : r.text });
+    const assistantEntry = { role: "assistant", content: r.html ? "[solicitud de imagen enviada]" : r.text };
+    chatHistory.push(assistantEntry);
+    if (r.html) {
+      const image = typing.querySelector(".gen-img");
+      const status = typing.querySelector(".gen-img-status");
+      const markImageResult = loaded => {
+        if (loaded) {
+          assistantEntry.content = "[imagen generada y recibida]";
+          if (status) status.textContent = "Imagen recibida del servicio externo Pollinations.";
+        } else {
+          assistantEntry.content = "[no se pudo obtener la imagen]";
+          if (status) status.textContent = "El servicio externo no devolvió una imagen. Inténtalo más tarde.";
+          image?.remove();
+        }
+      };
+      if (image) {
+        if (image.complete) markImageResult(image.naturalWidth > 0);
+        else {
+          image.addEventListener("load", () => markImageResult(true), { once: true });
+          image.addEventListener("error", () => markImageResult(false), { once: true });
+        }
+      }
+    }
   } catch (e) {
     if (chatHistory.length && chatHistory[chatHistory.length - 1].role === "user") chatHistory.pop();
     typing.innerHTML = `<p role="alert">⚠️ ${esc(e.message || "No se pudo obtener una respuesta de la IA.")}</p>`;
@@ -210,6 +232,44 @@ function initMascotVoice() {
  const speak=(text, pitch=1.05)=>{if(toggle.getAttribute("aria-pressed")!=="true"){if(status)status.textContent="Activa primero el botón de voz.";return;}if(!("speechSynthesis"in window)){if(status)status.textContent="Este navegador no admite voz sintética. Prueba Chrome o Edge.";return;}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="es-PE";u.rate=.92;u.pitch=Math.max(1.08,pitch);u.volume=1;const v=vozEspanolFemenina();if(v)u.voice=v;u.onstart=()=>{if(status)status.textContent="SeoaIA está hablando…";trigger.classList.add("is-speaking");};u.onend=()=>{if(status)status.textContent="Listo. Puedes volver a tocar el personaje.";trigger.classList.remove("is-speaking");};u.onerror=()=>{if(status)status.textContent="No se pudo reproducir la voz. Revisa el sonido del navegador.";trigger.classList.remove("is-speaking");};window.speechSynthesis.speak(u);};
  trigger.addEventListener("click",()=>speak("¡Hola! Te doy la bienvenida a SeoaIA, el asistente académico del Instituto de Educación Superior Tecnológico Público Manuel Seoane Corrales. Puedes explorar las siete carreras, consultar sílabos y hacer preguntas académicas. Pulsa el chat cuando quieras conversar conmigo."));
  document.addEventListener("click",e=>{const av=e.target.closest(".carrera-char, .modal-char");if(!av)return;const c=(window.CARRERAS_DATA||[]).find(x=>x.id===av.dataset.id);if(c)speak("Hola, soy el personaje guía de "+c.nombre+". Pulsa ver malla y detalles para conocer esta carrera.",1.08);});
+}
+
+function initAudioReferencia() {
+  const button = $("voice-reference-play"), audio = $("voice-reference-audio"), status = $("voice-status");
+  if (!button || !audio) return;
+  const render = playing => {
+    button.setAttribute("aria-pressed", String(playing));
+    button.innerHTML = playing
+      ? '<i class="fa-solid fa-stop" aria-hidden="true"></i> Detener audio'
+      : '<i class="fa-solid fa-headphones" aria-hidden="true"></i> Audio enviado';
+  };
+  button.addEventListener("click", async () => {
+    if (!audio.paused) {
+      audio.pause();
+      audio.currentTime = 0;
+      render(false);
+      if (status) status.textContent = "Audio original detenido.";
+      return;
+    }
+    try {
+      audio.currentTime = 0;
+      await audio.play();
+      render(true);
+      if (status) status.textContent = "Reproduciendo el audio original enviado. No cambia la voz de lectura.";
+    } catch (error) {
+      console.warn("No se pudo reproducir el audio original.", error);
+      render(false);
+      if (status) status.textContent = "No se pudo reproducir el audio. Revisa la conexión y el volumen del dispositivo.";
+    }
+  });
+  audio.addEventListener("ended", () => {
+    render(false);
+    if (status) status.textContent = "Audio original finalizado. La lectura usa la voz disponible en el navegador.";
+  });
+  audio.addEventListener("error", () => {
+    render(false);
+    if (status) status.textContent = "No se pudo cargar el audio original.";
+  });
 }
 
 function initChat() {

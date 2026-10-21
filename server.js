@@ -160,7 +160,7 @@ async function chat(req, res) {
   json(res, 502, { error: ultimoError || 'La IA no respondió con contenido.' });
 }
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.gif': 'image/gif', '.ico': 'image/x-icon', '.pdf': 'application/pdf' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.gif': 'image/gif', '.ico': 'image/x-icon', '.pdf': 'application/pdf', '.mp3': 'audio/mpeg' };
 const RUTAS = { '/padres': '/padres.html', '/mercado-laboral': '/mercado-laboral.html', '/balotario': '/balotario.html' };
 http.createServer((req, res) => {
   // CORS: permite que la web (ej. GitHub Pages) hable con este servidor. Limita con ALLOWED_ORIGIN.
