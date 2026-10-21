@@ -343,7 +343,8 @@ body > section, body > main, body > footer { margin-left:var(--seoaia-sidebar-wi
 .connection-banner.is-limited { background: var(--seoaia-navy); border-color: var(--seoaia-blue); }
 .offline-note { border-color: var(--seoaia-cyan); background: rgba(16,185,232,.08); }
 
-/* Mejorar la legibilidad de etiquetas y texto secundario sobre fondos oscuros. */
+/* El chat usa fondos oscuros incluso cuando la paleta general de la portada es clara. */
+#seccion-ia .chat-wrapper { --text-light: #f4f8ff; --text-muted: #c2d5eb; }
 .via { color: #f4f8ff; font-weight: 600; opacity: 1; }
 .connection-banner .connection-detail { opacity: 1; }
 .syllabus-hint, .syllabus-result small { color: #c2d5eb; }
