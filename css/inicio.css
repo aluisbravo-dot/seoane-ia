@@ -1,5 +1,6 @@
 /* SeoaIA v20: tema anime institucional, suave y legible. */
 @import url("style.css");
+@import url("calma.css");
 :root{--primary:#24549A;--primary-dark:#0B1F3A;--secondary:#55BCEB;--accent:#E7C86A;--bg-dark:#F5F7FA;--bg-card:#FFFFFF;--text-light:#243247;--text-muted:#63748A;--border-color:#D9E2EE;--shadow:0 8px 24px rgba(11,31,58,.10);--radius:14px}
 body{background:#F5F7FA;color:#243247}
 .navbar{background:rgba(255,255,255,.97);border-bottom:1px solid #D9E2EE;box-shadow:0 3px 14px rgba(11,31,58,.07)}
@@ -247,3 +248,34 @@ body:not([data-theme="light"]) .quiz-feedback-correct{background:#19372c;color:#
 body:not([data-theme="light"]) .quiz-feedback-incorrect{background:#3a252b;color:#f5e2e5}
 body:not([data-theme="light"]) .quiz-source{color:#d6e1f0}
 @media(max-width:560px){.quiz-mode-list{grid-template-columns:1fr}.quiz-mode-btn{min-height:0}.quiz-result-actions .btn{width:100%;justify-content:center}}
+
+/* Sobrescrituras finales para neutralizar las capas de color heredadas. */
+body:not([data-theme="light"]) .hero-copy-panel h1{color:#e2e7eb!important;text-shadow:none!important}
+body:not([data-theme="light"]) .hero-copy-panel h2{color:#d6dde3!important}
+body:not([data-theme="light"]) .hero-copy-panel .hero-lead{color:#c6cfd7!important}
+body:not([data-theme="light"]) .hero-copy-panel .badge,body:not([data-theme="light"]) .hero-feature-row span{background:rgba(255,255,255,.08)!important;border-color:rgba(222,229,235,.22)!important;color:#e2e7eb!important;box-shadow:none!important}
+body:not([data-theme="light"]) .section-title h2 i,body:not([data-theme="light"]) .hero-feature-row i{color:#c5cdd4!important}
+body:not([data-theme="light"]) .btn-primary,body:not([data-theme="light"]) .btn-primary:visited{background:#536b83!important;border-color:#536b83!important;color:#fff!important;box-shadow:none!important}
+body:not([data-theme="light"]) .btn-secondary,body:not([data-theme="light"]) .card-btn{background:#263442!important;border-color:#495866!important;color:#e2e7eb!important}
+body:not([data-theme="light"]) .card,body:not([data-theme="light"]) .carrera-card,body:not([data-theme="light"]) .faculty-card,body:not([data-theme="light"]) .annex-card,body:not([data-theme="light"]) .recurso-card,body:not([data-theme="light"]) .proyecto-card,body:not([data-theme="light"]) .automation-form,body:not([data-theme="light"]) .automation-result-panel,body:not([data-theme="light"]) .quiz-box{background:#1a2632!important;border-color:#34414e!important;box-shadow:0 7px 20px rgba(0,0,0,.12)!important}
+body:not([data-theme="light"]) .quiz-mode-btn,body:not([data-theme="light"]) .quiz-box .quiz-option-btn{background:#202d39!important;border-color:#394754!important;color:#e2e7eb!important}
+body:not([data-theme="light"]) .quiz-mode-btn:hover,body:not([data-theme="light"]) .quiz-mode-btn.is-selected,body:not([data-theme="light"]) .quiz-box .quiz-option-btn:hover:not(:disabled){background:#293744!important;border-color:#586776!important}
+body:not([data-theme="light"]) .quiz-mode-btn strong,body:not([data-theme="light"]) .quiz-question{color:#e2e7eb!important}
+body:not([data-theme="light"]) .quiz-mode-btn small,body:not([data-theme="light"]) .quiz-count,body:not([data-theme="light"]) .quiz-result-copy{color:#b5c0ca!important}
+body:not([data-theme="light"]) .quiz-box .quiz-option-btn.is-correct{background:#26352e!important;border-color:#708878!important;color:#e2e9e4!important}
+body:not([data-theme="light"]) .quiz-box .quiz-option-btn.is-incorrect{background:#382d30!important;border-color:#8b7378!important;color:#eadfe1!important}
+body[data-theme="light"] .btn-primary,body[data-theme="light"] .btn-primary:visited{background:#536b83!important;border-color:#536b83!important;color:#fff!important;box-shadow:none!important}
+body[data-theme="light"] .section-title h2,body[data-theme="light"] .section-eyebrow,body[data-theme="light"] .carrera-title{color:#34485d!important}
+body[data-theme="light"] .hero-copy-panel .badge,body[data-theme="light"] .hero-feature-row span{background:#eef1f3!important;border-color:#d8dde2!important;color:#465361!important}
+body[data-theme="light"] .hero-feature-row i{color:#536b83!important}
+.hero-mascot-trigger,#chat-avatar,.chat-header .avatar,.avatar,.mascot-voice-controls .btn{border-color:#cbd3da!important;box-shadow:0 3px 10px rgba(32,44,57,.08)!important}
+.hero-mascot-trigger{background:#f8f9fa!important}
+.chat-fab,body:not([data-theme="light"]) .chat-fab{background:#536b83!important;border-color:#aeb9c3!important;box-shadow:0 5px 14px rgba(32,44,57,.16)!important}
+body:not([data-theme="light"]) .hero-mascot-trigger{background:#202d39!important;border-color:#586776!important}
+body:not([data-theme="light"]) .hero-mascot-trigger .mascot-tap-hint,body:not([data-theme="light"]) #mascot-voice-status{color:#b5c0ca!important}
+body:not([data-theme="light"]) .portal-chat-preview{background:#1a2632!important;border-color:#34414e!important;box-shadow:0 7px 20px rgba(0,0,0,.12)!important}
+body:not([data-theme="light"]) .portal-chat-icon,body:not([data-theme="light"]) .portal-chat-label,body:not([data-theme="light"]) .portal-chat-links a,body:not([data-theme="light"]) .portal-official-link{background:#202d39!important;border-color:#394754!important;color:#d4dbe1!important}
+body:not([data-theme="light"]) .portal-chat-greeting{background:#202d39!important;color:#d4dbe1!important}
+body:not([data-theme="light"]) .portal-chat-input{background:#202d39!important;border-color:#394754!important;color:#c6cfd7!important}
+body:not([data-theme="light"]) .sidebar-institute{background:#1a2632!important;border-color:#34414e!important}
+body:not([data-theme="light"]) .sidebar-institute a,body:not([data-theme="light"]) .faculty-card a,body:not([data-theme="light"]) .annex-card .annex-arrow{color:#c5cdd4!important}

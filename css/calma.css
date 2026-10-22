@@ -1,0 +1,468 @@
+/* Paleta neutra compartida: reduce brillos y conserva contraste en ambos temas. */
+:root {
+  --seoaia-navy: #202c39;
+  --seoaia-blue: #536b83;
+  --seoaia-cyan: #8293a4;
+  --seoaia-gold: #b8ad95;
+  --primary: #536b83 !important;
+  --primary-dark: #34485d !important;
+  --secondary: #8293a4 !important;
+  --accent: #b8ad95 !important;
+  --border-color: #d9dee4 !important;
+  --shadow: 0 8px 24px rgba(32, 44, 57, .07) !important;
+}
+
+body,
+body[data-theme="light"] {
+  background: #f4f5f6 !important;
+  color: #303b46 !important;
+}
+
+.navbar {
+  background: rgba(250, 251, 252, .97) !important;
+  border-bottom: 1px solid #dce1e6 !important;
+  box-shadow: 0 2px 10px rgba(32, 44, 57, .05) !important;
+}
+
+.brand-title,
+.brand,
+.nav-links a,
+.section-title h2,
+.carrera-title,
+.section-eyebrow,
+.sidebar-extra-links a,
+.sidebar-institute strong {
+  color: #34485d !important;
+}
+
+.brand-sub,
+.section-title p,
+.carrera-desc,
+.carrera-meta,
+.sidebar-institute small {
+  color: #697785 !important;
+}
+
+.nav-links a:hover,
+.sidebar-extra-links a:hover {
+  color: #536b83 !important;
+}
+
+.hero.dashboard-hero {
+  background-image: linear-gradient(115deg, rgba(32, 44, 57, .94), rgba(54, 70, 86, .89)), url("../img/referencias/campus-seoaia.webp") !important;
+  border-bottom-color: #c9d0d7 !important;
+}
+
+.dashboard-hero-bg {
+  background: linear-gradient(110deg, rgba(32, 44, 57, .16), rgba(32, 44, 57, 0)) !important;
+}
+
+.hero-copy-panel h1,
+.hero-copy-panel h2,
+.hero-copy-panel .hero-lead {
+  text-shadow: none !important;
+}
+
+.hero-copy-panel h1 {
+  color: #e9edf0 !important;
+}
+
+.hero-copy-panel h2 {
+  color: #dbe1e6 !important;
+}
+
+.hero-copy-panel .hero-lead {
+  color: #d0d7de !important;
+}
+
+body:not([data-theme="light"]) .hero-copy-panel h1 {
+  color: #e2e7eb !important;
+  text-shadow: none !important;
+}
+
+body:not([data-theme="light"]) .hero-copy-panel h2 {
+  color: #d6dde3 !important;
+}
+
+body:not([data-theme="light"]) .hero-copy-panel .hero-lead {
+  color: #c6cfd7 !important;
+}
+
+.hero-copy-panel .badge,
+.hero-feature-row span {
+  background: rgba(255, 255, 255, .08) !important;
+  border-color: rgba(222, 229, 235, .22) !important;
+  color: #e2e7eb !important;
+  box-shadow: none !important;
+}
+
+body:not([data-theme="light"]) .hero-copy-panel .badge,
+body:not([data-theme="light"]) .hero-feature-row span {
+  background: rgba(255, 255, 255, .08) !important;
+  border-color: rgba(222, 229, 235, .22) !important;
+  color: #e2e7eb !important;
+}
+
+.hero-feature-row i,
+.hero-bot-mark {
+  color: #c5cdd4 !important;
+}
+
+body:not([data-theme="light"]) .hero-feature-row i,
+body:not([data-theme="light"]) .section-title h2 i {
+  color: #c5cdd4 !important;
+}
+
+.btn-primary,
+.btn-primary:visited,
+.btn,
+body:not([data-theme="light"]) .btn-primary,
+body.internal-page:not([data-theme="light"]) .btn-primary,
+body[data-theme="light"] .btn-primary {
+  background: #536b83 !important;
+  border: 1px solid #536b83 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:hover,
+.btn:hover {
+  background: #43586d !important;
+  border-color: #43586d !important;
+  box-shadow: none !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary,
+.card-btn,
+body.internal-page:not([data-theme="light"]) .btn-secondary,
+body[data-theme="light"] .btn-secondary {
+  background: #eef1f3 !important;
+  border: 1px solid #cfd6dc !important;
+  color: #34485d !important;
+  box-shadow: none !important;
+}
+
+.btn-secondary:hover,
+.card-btn:hover {
+  background: #e3e8ec !important;
+  border-color: #b8c2cb !important;
+  color: #263747 !important;
+}
+
+.card,
+.carrera-card,
+.padres-card,
+.mini-card,
+.announcements-card,
+.automation-form,
+.automation-result-panel,
+.acordeon,
+.recurso-card,
+.proyecto-card,
+.quiz-box,
+.page-card {
+  background: #fff !important;
+  color: #303b46 !important;
+  border: 1px solid #dce1e6 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 6px 18px rgba(32, 44, 57, .05) !important;
+}
+
+.carrera-card:hover,
+.recurso-card:hover,
+.annex-card:hover,
+.faculty-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: #aebbc7 !important;
+  box-shadow: 0 9px 22px rgba(32, 44, 57, .08) !important;
+}
+
+.carrera-char,
+.modal-char,
+.chat-header .avatar,
+.hero-mascot-trigger,
+.chat-fab img,
+.creator-inline img {
+  border-color: #cbd3da !important;
+  box-shadow: 0 3px 10px rgba(32, 44, 57, .08) !important;
+}
+
+.hero-mascot-trigger {
+  background: #f8f9fa !important;
+}
+
+.hero-mascot-trigger:hover,
+.hero-mascot-trigger:focus-visible {
+  border-color: #9eabb7 !important;
+  box-shadow: 0 6px 16px rgba(32, 44, 57, .1) !important;
+}
+
+.badge,
+.tag,
+.project-status,
+.faculty-role {
+  background: #f0f2f3 !important;
+  color: #53616f !important;
+  border-color: #d8dde2 !important;
+}
+
+.recurso-icon,
+.page-icon,
+.portal-chat-icon,
+.portal-chat-label {
+  background: #eef1f3 !important;
+  color: #536b83 !important;
+  border-color: #d5dce2 !important;
+}
+
+.art-nexium,
+.art-sonrident,
+.art-connecta {
+  background: linear-gradient(135deg, #667787, #3d4d5b) !important;
+}
+
+.proyecto-art {
+  text-shadow: none !important;
+}
+
+.portal-chat-preview,
+.portal-chat-greeting,
+.portal-chat-input,
+.portal-chat-links a,
+.portal-official-link {
+  box-shadow: none !important;
+}
+
+.portal-chat-preview {
+  border-color: #dce1e6 !important;
+}
+
+.portal-chat-greeting {
+  background: #f1f3f5 !important;
+  color: #465361 !important;
+}
+
+.portal-chat-input,
+.portal-chat-links a,
+.portal-official-link {
+  border-color: #dce1e6 !important;
+}
+
+.footer,
+footer {
+  background: #202c39 !important;
+  color: #e1e5e8 !important;
+  border-top: 1px solid #3d4a57 !important;
+}
+
+.footer a,
+footer a {
+  color: #c8d1d9 !important;
+}
+
+.footer-box h2,
+.footer-box h3 {
+  color: #e1e5e8 !important;
+}
+
+.footer-box p,
+.footer-box li {
+  color: #c2cbd3 !important;
+}
+
+body:not([data-theme="light"]) .footer a,
+body:not([data-theme="light"]) footer a,
+body:not([data-theme="light"]) .footer-box h2,
+body:not([data-theme="light"]) .footer-box h3 {
+  color: #d3dae0 !important;
+}
+
+.page-header,
+body .page-top,
+body .page-footer {
+  background: #34485d !important;
+  border-color: #c2cbd3 !important;
+}
+
+body .page-shell h1,
+body .page-card h2 {
+  color: #34485d !important;
+}
+
+body .page-link {
+  background: #536b83 !important;
+  color: #fff !important;
+}
+
+body .page-note,
+body .aviso {
+  background: #f3f2ef !important;
+  border-color: #b8ad95 !important;
+  color: #5b5a55 !important;
+}
+
+body .page-top a {
+  color: #e2e7eb !important;
+}
+
+body:not([data-theme="light"]) {
+  background: #111a23 !important;
+  color: #e2e7eb !important;
+}
+
+body:not([data-theme="light"]) .navbar {
+  background: rgba(24, 34, 45, .97) !important;
+  border-bottom-color: #34414e !important;
+}
+
+body:not([data-theme="light"]) .brand-title,
+body:not([data-theme="light"]) .brand,
+body:not([data-theme="light"]) .nav-links a,
+body:not([data-theme="light"]) .section-title h2,
+body:not([data-theme="light"]) .carrera-title,
+body:not([data-theme="light"]) .section-eyebrow,
+body:not([data-theme="light"]) .sidebar-extra-links a,
+body:not([data-theme="light"]) .sidebar-institute strong,
+body:not([data-theme="light"]) .faculty-card h3,
+body:not([data-theme="light"]) .annex-card strong,
+body:not([data-theme="light"]) .recurso-card strong,
+body:not([data-theme="light"]) .proyecto-copy h3,
+body:not([data-theme="light"]) .automation-result-head h3 {
+  color: #e2e7eb !important;
+}
+
+body:not([data-theme="light"]) .brand-sub,
+body:not([data-theme="light"]) .section-title p,
+body:not([data-theme="light"]) .carrera-desc,
+body:not([data-theme="light"]) .carrera-meta,
+body:not([data-theme="light"]) .sidebar-institute small,
+body:not([data-theme="light"]) .faculty-card p,
+body:not([data-theme="light"]) .faculty-card small,
+body:not([data-theme="light"]) .annex-card small,
+body:not([data-theme="light"]) .recurso-card > span:last-child,
+body:not([data-theme="light"]) .proyecto-copy p,
+body:not([data-theme="light"]) .automation-note {
+  color: #b5c0ca !important;
+}
+
+body:not([data-theme="light"]) .card,
+body:not([data-theme="light"]) .carrera-card,
+body:not([data-theme="light"]) .padres-card,
+body:not([data-theme="light"]) .mini-card,
+body:not([data-theme="light"]) .announcements-card,
+body:not([data-theme="light"]) .automation-form,
+body:not([data-theme="light"]) .automation-result-panel,
+body:not([data-theme="light"]) .acordeon,
+body:not([data-theme="light"]) .recurso-card,
+body:not([data-theme="light"]) .proyecto-card,
+body:not([data-theme="light"]) .quiz-box,
+body:not([data-theme="light"]) .page-card {
+  background: #1a2632 !important;
+  color: #e2e7eb !important;
+  border-color: #34414e !important;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, .12) !important;
+}
+
+body:not([data-theme="light"]) .btn-secondary,
+body:not([data-theme="light"]) .card-btn {
+  background: #263442 !important;
+  border-color: #495866 !important;
+  color: #e2e7eb !important;
+}
+
+body:not([data-theme="light"]) .portal-chat-preview,
+body:not([data-theme="light"]) .portal-chat-input,
+body:not([data-theme="light"]) .portal-chat-links a,
+body:not([data-theme="light"]) .portal-official-link,
+body:not([data-theme="light"]) .portal-chat-greeting {
+  background: #202d39 !important;
+  border-color: #394754 !important;
+  color: #d4dbe1 !important;
+}
+
+body:not([data-theme="light"]) .seoaia-sidebar {
+  background: #18232e !important;
+  border-color: #34414e !important;
+}
+
+body:not([data-theme="light"]) .seoaia-sidebar nav a i {
+  color: #aab6c1 !important;
+}
+
+body:not([data-theme="light"]) .seoaia-sidebar nav a:hover,
+body:not([data-theme="light"]) .seoaia-sidebar nav a.side-active {
+  background: #263442 !important;
+  border-color: #495866 !important;
+  box-shadow: inset 3px 0 #8293a4 !important;
+}
+
+body:not([data-theme="light"]) .quiz-mode-btn,
+body:not([data-theme="light"]) .quiz-box .quiz-option-btn {
+  background: #202d39 !important;
+  border-color: #394754 !important;
+  color: #e2e7eb !important;
+}
+
+body:not([data-theme="light"]) .quiz-mode-btn:hover,
+body:not([data-theme="light"]) .quiz-mode-btn.is-selected,
+body:not([data-theme="light"]) .quiz-box .quiz-option-btn:hover:not(:disabled) {
+  background: #293744 !important;
+  border-color: #586776 !important;
+}
+
+body:not([data-theme="light"]) .quiz-mode-btn strong,
+body:not([data-theme="light"]) .quiz-question {
+  color: #e2e7eb !important;
+}
+
+body:not([data-theme="light"]) .quiz-mode-btn small,
+body:not([data-theme="light"]) .quiz-count,
+body:not([data-theme="light"]) .quiz-result-copy {
+  color: #b5c0ca !important;
+}
+
+body:not([data-theme="light"]) .quiz-box .quiz-option-btn.is-correct {
+  background: #26352e !important;
+  border-color: #708878 !important;
+  color: #e2e9e4 !important;
+}
+
+body:not([data-theme="light"]) .quiz-box .quiz-option-btn.is-incorrect {
+  background: #382d30 !important;
+  border-color: #8b7378 !important;
+  color: #eadfe1 !important;
+}
+
+body.internal-page[data-theme="light"] .btn-primary {
+  background: #536b83 !important;
+  color: #fff !important;
+}
+
+body.internal-page:not([data-theme="light"]) .page-header {
+  background: #202c39 !important;
+}
+
+body.internal-page:not([data-theme="light"]) .section a:not(.btn),
+body.internal-page:not([data-theme="light"]) .padres-card h4,
+body.internal-page:not([data-theme="light"]) .mini-card h4 {
+  color: #c5cdd4 !important;
+}
+
+body.internal-page:not([data-theme="light"]) .tag.especialidad,
+body.internal-page:not([data-theme="light"]) .tag.transversal,
+body.internal-page[data-theme="light"] .tag.especialidad,
+body.internal-page[data-theme="light"] .tag.transversal {
+  background: #eef1f3 !important;
+  color: #53616f !important;
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

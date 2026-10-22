@@ -1,8 +1,10 @@
 /* SeoaIA: modo híbrido con caché de la interfaz y de los PDF que el usuario abre. */
-const CACHE_NAME = 'seoaia-v16-offline';
+const CACHE_NAME = 'seoaia-v17-offline';
 const CORE_ASSETS = [
   './', 'index.html', 'padres.html', 'mercado-laboral.html', 'balotario.html',
-  'css/style.css', 'js/config.js', 'js/carreras.js', 'js/conocimiento.js',
+  'css/style.css', 'css/tokens.css', 'css/base.css', 'css/modules.css',
+  'css/automation.css', 'css/inicio.css', 'css/calma.css',
+  'js/config.js', 'js/carreras.js', 'js/conocimiento.js',
   'js/personajes.js', 'js/ia.js', 'js/script.js', 'js/silabos-offline.json',
   'manifest.webmanifest', 'img/icon.svg', 'voz/voz-referencia.mp3'
 ];
