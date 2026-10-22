@@ -1,5 +1,5 @@
 /* SeoaIA: modo híbrido con caché de la interfaz y de los PDF que el usuario abre. */
-const CACHE_NAME = 'seoaia-v17-offline';
+const CACHE_NAME = 'seoaia-v18-offline';
 const CORE_ASSETS = [
   './', 'index.html', 'padres.html', 'mercado-laboral.html', 'balotario.html',
   'css/style.css', 'css/tokens.css', 'css/base.css', 'css/modules.css',

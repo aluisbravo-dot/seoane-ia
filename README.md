@@ -34,5 +34,7 @@ In Render, open the web service, go to **Environment**, and add `GROQ_API_KEY` w
 ## Comprobación
 Abre `/api/status`. El servicio debe responder HTTP 200. El indicador de IA en la nube depende de que exista una clave válida y de la cuota del proveedor. El paquete contiene 319 archivos PDF de sílabos, pero esto no demuestra que el inventario académico esté completo o actualizado.
 
+El test de cultura general genera cinco preguntas por tema mediante el proveedor de IA configurado en el servidor (`POST /api/quiz`). Las preguntas se guardan en caché en memoria durante seis horas y se vuelven a generar cuando alguien solicita ese tema después de vencer la caché. Si la IA no está disponible, la web utiliza las preguntas locales; el test también incluye lectura por voz del navegador, reto con tiempo y repaso de errores.
+
 ## Notas de esta revisión
 Se corrigió la metadata de `package.json` para que identifique la versión 20. Se actualizaron estas instrucciones para reflejar la estructura real del paquete. No se incorporan documentos Word de exposición o revisión dentro de la aplicación.

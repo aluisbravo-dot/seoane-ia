@@ -289,8 +289,18 @@
             <option value="Ciencia y ambiente">Ciencia y ambiente</option>
             <option value="Tecnología y cultura">Tecnología y cultura</option>
             <option value="Historia y geografía">Historia y geografía</option>
+            <option value="Matemática y lógica">Matemática y lógica</option>
+            <option value="Comunicación">Comunicación</option>
+            <option value="Ética y convivencia">Ética y convivencia</option>
+            <option value="Carreras técnicas">Carreras técnicas</option>
           </select>
-          <p>Las preguntas sobre autoridades pueden cambiar. Consulta el enlace oficial que aparece en la explicación.</p>
+          <label for="quiz-activity">Tipo de práctica</label>
+          <select id="quiz-activity">
+            <option value="practice">Práctica con explicación</option>
+            <option value="challenge">Reto: 20 segundos por pregunta</option>
+            <option value="errors" disabled>Repasar respuestas incorrectas</option>
+          </select>
+          <p>Las preguntas nuevas se generan con IA cuando hay conexión. Sin conexión se usan preguntas guardadas en el proyecto.</p>
         </div>
         <button id="quiz-start" class="btn btn-primary btn-large"><i class="fa-solid fa-play"></i> Iniciar test vocacional</button>
       </div>

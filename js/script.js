@@ -349,7 +349,7 @@ const bienvenida = () => "<p>¡Hola! Soy <strong>SeoaneBot</strong>, la intelige
 
 // ---------- Test vocacional ----------
 let currentQuestionIndex = 0, scoreMap = {}, quizMode = "vocacional";
-let culturaPreguntasActuales = [], culturaPuntaje = 0, culturaRespondida = false;
+let culturaPreguntasActuales = [], culturaPreguntasFalladas = [], culturaErroresActuales = [], culturaPuntaje = 0, culturaRespondida = false, quizTimer = null;
 function initQuiz() {
   const start = $("quiz-start"), setup = $("quiz-setup"), stage = $("quiz-stage");
   if (!start || !setup || !stage) return;
@@ -363,9 +363,12 @@ function initQuiz() {
     $("quiz-topic-row").hidden = quizMode !== "cultura";
     start.innerHTML = `<i class="fa-solid fa-play"></i> Iniciar ${quizMode === "cultura" ? "práctica de cultura general" : "test vocacional"}`;
   }));
+  $("quiz-activity").addEventListener("change", () => {
+    $("quiz-start").disabled = $("quiz-activity").value === "errors" && !culturaPreguntasFalladas.length;
+  });
   start.onclick = iniciarQuiz;
 }
-function iniciarQuiz() {
+async function iniciarQuiz() {
   currentQuestionIndex = 0;
   scoreMap = {};
   culturaPuntaje = 0;
@@ -374,12 +377,44 @@ function iniciarQuiz() {
   $("quiz-stage").hidden = false;
   if (quizMode === "cultura") {
     const topic = $("quiz-topic").value;
-    culturaPreguntasActuales = QUIZ_CULTURA.filter(q => q.tema === topic);
+    let activity = $("quiz-activity").value;
+    if (activity === "errors" && !culturaPreguntasFalladas.length) {
+      activity = "practice";
+      $("quiz-activity").value = activity;
+    }
+    if (activity === "errors") {
+      culturaPreguntasActuales = culturaPreguntasFalladas.slice();
+      culturaPreguntasFalladas = [];
+    } else {
+      const cached = QUIZ_CULTURA.filter(q => q.tema === topic);
+      $("quiz-stage").innerHTML = `<p class="quiz-count" role="status">Buscando preguntas nuevas para ${esc(topic)}…</p>`;
+      try {
+        const response = await fetch(API() + "/api/quiz", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tema: topic }) });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+        culturaPreguntasActuales = data.questions;
+        $("quiz-stage").dataset.quizSource = "cloud";
+        $("quiz-stage").dataset.quizUpdated = new Date(data.generatedAt).toLocaleString("es-PE");
+      } catch (error) {
+        culturaPreguntasActuales = cached;
+        $("quiz-stage").dataset.quizSource = "local";
+        $("quiz-stage").dataset.quizUpdated = "";
+        console.warn("Se usarán las preguntas disponibles sin conexión:", error.message);
+      }
+      if (!culturaPreguntasActuales.length) {
+        $("quiz-stage").innerHTML = `<p role="status">No hay preguntas locales para ${esc(topic)} y no se pudo conectar con la nube. Comprueba tu conexión e inténtalo de nuevo.</p><button class="btn btn-secondary" id="quiz-back" type="button">Volver</button>`;
+        $("quiz-back").addEventListener("click", reiniciarSeleccionQuiz);
+        return;
+      }
+      culturaPreguntasFalladas = [];
+    }
+    if (activity !== "errors") culturaPreguntasActuales = culturaPreguntasActuales.slice();
     for (let i = culturaPreguntasActuales.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [culturaPreguntasActuales[i], culturaPreguntasActuales[j]] = [culturaPreguntasActuales[j], culturaPreguntasActuales[i]];
     }
-    culturaPreguntasActuales = culturaPreguntasActuales.slice(0, 5);
+    if (activity !== "errors") culturaPreguntasActuales = culturaPreguntasActuales.slice(0, 5);
+    culturaErroresActuales = [];
   }
   mostrarPreguntaQuiz();
 }
@@ -397,19 +432,45 @@ function mostrarPreguntaQuiz() {
 function responderQuiz(id) { scoreMap[id] = (scoreMap[id] || 0) + 1; currentQuestionIndex++; mostrarPreguntaQuiz(); }
 function mostrarPreguntaCultura() {
   const c = $("quiz-stage");
+  clearInterval(quizTimer);
   if (currentQuestionIndex >= culturaPreguntasActuales.length) return mostrarResultadoCultura();
   const q = culturaPreguntasActuales[currentQuestionIndex];
   culturaRespondida = false;
+  const challenge = $("quiz-activity").value === "challenge";
   c.innerHTML = `<div class="quiz-progress" role="progressbar" aria-label="Progreso de la práctica" aria-valuenow="${currentQuestionIndex + 1}" aria-valuemin="1" aria-valuemax="${culturaPreguntasActuales.length}"><span style="width:${((currentQuestionIndex + 1) / culturaPreguntasActuales.length) * 100}%"></span></div>
-    <p class="quiz-count">${esc(q.tema)} · Pregunta ${currentQuestionIndex + 1} de ${culturaPreguntasActuales.length}</p>
+    <p class="quiz-count">${esc(q.tema)} · Pregunta ${currentQuestionIndex + 1} de ${culturaPreguntasActuales.length}${challenge ? ' · <span id="quiz-timer">20</span> s' : ''}${culturaPreguntasFalladas.length || $("quiz-activity").value === "errors" ? '' : $("quiz-stage").dataset.quizSource === "cloud" ? ` · Actualizadas en la nube: ${esc($("quiz-stage").dataset.quizUpdated)}` : ' · Preguntas locales'}</p>
+    <div class="quiz-voice-controls"><button class="btn btn-secondary" id="quiz-speak" type="button"><i class="fa-solid fa-volume-high"></i> Escuchar pregunta</button><span id="quiz-voice-status" role="status" aria-live="polite"></span></div>
     <h3 class="quiz-question">${esc(q.pregunta)}</h3>
     <div class="quiz-options">${q.opciones.map((option, i) => `<button class="quiz-option-btn" type="button" data-respuesta="${i}">${i + 1}. ${esc(option)}</button>`).join("")}</div>
     <div class="quiz-feedback" id="quiz-feedback" aria-live="polite"></div>`;
+  $("quiz-speak").addEventListener("click", () => leerPreguntaQuiz(q));
   c.querySelectorAll("[data-respuesta]").forEach(button => button.addEventListener("click", () => responderCultura(Number(button.dataset.respuesta))));
+  if (challenge) {
+    let remaining = 20;
+    quizTimer = setInterval(() => {
+      remaining--;
+      const timer = $("quiz-timer");
+      if (timer) timer.textContent = String(remaining);
+      if (remaining <= 0) responderCultura(-1);
+    }, 1000);
+  }
+}
+function leerPreguntaQuiz(q) {
+  const status = $("quiz-voice-status");
+  if (!("speechSynthesis" in window)) { status.textContent = "Este navegador no admite lectura en voz alta."; return; }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(textoParaVoz(`${q.pregunta}. ${q.opciones.map((option, i) => `Opción ${i + 1}: ${option}`).join(". ")}`));
+  utterance.lang = "es-PE"; utterance.rate = 0.92;
+  const voice = vozEspanolFemenina(); if (voice) utterance.voice = voice;
+  status.textContent = voice ? "Leyendo con una voz en español…" : "Leyendo con la voz disponible del navegador…";
+  utterance.onend = () => { status.textContent = "Lectura terminada."; };
+  utterance.onerror = () => { status.textContent = "No se pudo reproducir la voz."; };
+  window.speechSynthesis.speak(utterance);
 }
 function responderCultura(respuesta) {
   if (culturaRespondida) return;
   culturaRespondida = true;
+  clearInterval(quizTimer);
   const q = culturaPreguntasActuales[currentQuestionIndex];
   const buttons = $("quiz-stage").querySelectorAll("[data-respuesta]");
   buttons.forEach((button, i) => {
@@ -419,19 +480,29 @@ function responderCultura(respuesta) {
   });
   const correcta = respuesta === q.correcta;
   if (correcta) culturaPuntaje++;
-  $("quiz-feedback").innerHTML = `<p class="${correcta ? "quiz-feedback-correct" : "quiz-feedback-incorrect"}"><strong>${correcta ? "¡Correcto!" : "No era esa opción."}</strong> ${esc(q.explicacion)}</p>
+  else culturaErroresActuales.push(q);
+  $("quiz-feedback").innerHTML = `<p class="${correcta ? "quiz-feedback-correct" : "quiz-feedback-incorrect"}"><strong>${correcta ? "¡Correcto!" : respuesta < 0 ? "Se acabó el tiempo." : "No era esa opción."}</strong> ${esc(q.explicacion)}</p>
     ${q.fuente ? `<a class="quiz-source" href="${q.fuente}" target="_blank" rel="noopener">Ver fuente oficial <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ""}
     <button class="btn btn-primary" id="quiz-next" type="button">${currentQuestionIndex + 1 === culturaPreguntasActuales.length ? "Ver resultado" : "Siguiente pregunta"} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>`;
   $("quiz-next").addEventListener("click", () => { currentQuestionIndex++; mostrarPreguntaQuiz(); });
 }
 function mostrarResultadoCultura() {
   const total = culturaPreguntasActuales.length;
+  culturaPreguntasFalladas = culturaErroresActuales.slice();
+  const errorsOption = $("quiz-activity").querySelector('option[value="errors"]');
+  errorsOption.disabled = culturaErroresActuales.length === 0;
+  if (errorsOption.disabled && $("quiz-activity").value === "errors") $("quiz-activity").value = "practice";
   $("quiz-stage").innerHTML = `<div class="quiz-result-icon"><i class="fa-solid fa-award" aria-hidden="true"></i></div>
     <p class="quiz-count">${esc(culturaPreguntasActuales[0]?.tema || "Cultura general")}</p>
     <h3 class="quiz-question">Obtuviste ${culturaPuntaje} de ${total} respuestas correctas</h3>
     <p class="quiz-result-copy">${culturaPuntaje === total ? "¡Excelente! Tienes muy buen dominio de este tema." : culturaPuntaje >= 3 ? "¡Buen trabajo! Sigue repasando para aprender aún más." : "Cada pregunta es una oportunidad para aprender. ¡Inténtalo otra vez!"}</p>
-    <div class="quiz-result-actions"><button class="btn btn-primary" id="quiz-repeat" type="button"><i class="fa-solid fa-rotate"></i> Repetir práctica</button><button class="btn btn-secondary" id="quiz-change" type="button">Elegir otra actividad</button></div>`;
+    <div class="quiz-result-actions"><button class="btn btn-primary" id="quiz-repeat" type="button"><i class="fa-solid fa-rotate"></i> Repetir práctica</button>${culturaErroresActuales.length ? '<button class="btn btn-secondary" id="quiz-review-errors" type="button">Repasar respuestas incorrectas</button>' : ''}<button class="btn btn-secondary" id="quiz-change" type="button">Elegir otra actividad</button></div>`;
   $("quiz-repeat").addEventListener("click", iniciarQuiz);
+  if (culturaErroresActuales.length) $("quiz-review-errors").addEventListener("click", () => {
+    culturaPreguntasFalladas = culturaErroresActuales.slice();
+    $("quiz-activity").value = "errors";
+    iniciarQuiz();
+  });
   $("quiz-change").addEventListener("click", reiniciarSeleccionQuiz);
 }
 function mostrarResultadoQuiz() {

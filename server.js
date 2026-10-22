@@ -10,6 +10,9 @@ const SYLLABI_DIR = path.join(__dirname, 'documentos', 'silabos');
 const pdfTextCache = new Map();
 function listarSilabos() { const out=[]; const walk=(dir)=>{ for(const ent of fs.readdirSync(dir,{withFileTypes:true})){ const full=path.join(dir,ent.name); if(ent.isDirectory()) walk(full); else if(ent.name.toLowerCase().endsWith('.pdf')) { const rel=path.relative(__dirname,full).split(path.sep).join('/'); const parts=path.relative(SYLLABI_DIR,full).split(path.sep); out.push({career:parts[0]||'',semester:parts[1]||'',turn:parts[2]||'',name:ent.name,path:'/'+rel,bytes:fs.statSync(full).size}); } } }; if(fs.existsSync(SYLLABI_DIR)) walk(SYLLABI_DIR); return out; }
 const silabos = listarSilabos();
+const QUIZ_TOPICS = ['Perú y ciudadanía', 'Ciencia y ambiente', 'Tecnología y cultura', 'Historia y geografía', 'Matemática y lógica', 'Comunicación', 'Ética y convivencia', 'Carreras técnicas'];
+const quizCache = new Map(), quizRequests = new Map();
+const QUIZ_CACHE_MS = 6 * 60 * 60 * 1000;
 async function textoPdf(item){ if(!pdfParse) return ''; if(pdfTextCache.has(item.path)) return pdfTextCache.get(item.path); try { const b=fs.readFileSync(path.join(__dirname,item.path)); const d=await pdfParse(b); const t=(d.text||'').slice(0,18000); pdfTextCache.set(item.path,t); return t; } catch(e){ return ''; } }
 async function buscarSilabos(q,career,semester,turn,withText=false){ const aliases={'Desarrollo de Sistemas de Información':'desarrollo-sistemas-informacion','Enfermería Técnica':'enfermeria-tecnica','Contabilidad':'contabilidad','Electricidad Industrial / Electrotecnia Industrial':'electricidad-industrial','Electricidad Industrial':'electricidad-industrial','Electrotecnia Industrial':'electricidad-industrial','Mecatrónica Automotriz':'mecatronica-automotriz','Mecánica de Producción Industrial':'mecanica-produccion-industrial','Química Industrial':'quimica-industrial'}; career=aliases[career]||career; let arr=silabos.filter(x=>(!career||x.career===career)&&(!semester||x.semester.toUpperCase()===semester.toUpperCase())&&(!turn||x.turn.toUpperCase()===turn.toUpperCase())); const terms=(q||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean); if(terms.length){ const scored=[]; const candidates=withText?arr.slice(0,70):arr; for(const x of candidates){ const base=(x.name+' '+x.career+' '+x.semester+' '+x.turn).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); let score=terms.reduce((n,t)=>n+(base.includes(t)?2:0),0); let excerpt=''; if(withText&&pdfParse&&score<terms.length*2&&scored.length<12){ excerpt=await textoPdf(x); const body=excerpt.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); score+=terms.reduce((n,t)=>n+(body.includes(t)?1:0),0); } if(score>0) scored.push({...x,score,excerpt:withText?excerpt.slice(0,700):undefined}); } scored.sort((a,b)=>b.score-a.score); arr=scored; } else arr=arr.map(x=>({...x,score:0})); return arr.slice(0,40); }
 
@@ -133,9 +136,67 @@ async function llamarGemini({ system, msgs, files }) {
 // ---- límite simple por IP: 25 mensajes cada 10 min ----
 const usos = new Map();
 const limite = ip => { const n = Date.now(), a = (usos.get(ip) || []).filter(t => n - t < 600000); a.push(n); usos.set(ip, a); return a.length > 25; };
+const limiteQuiz = ip => { const n = Date.now(), key = `quiz:${ip}`, a = (usos.get(key) || []).filter(t => n - t < 600000); if (a.length >= 4) { usos.set(key, a); return true; } a.push(n); usos.set(key, a); return false; };
 
 function json(res, code, obj) { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); }
 
+function validarPreguntasQuiz(texto, tema) {
+  const contenido = texto.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  const datos = JSON.parse(contenido);
+  if (!Array.isArray(datos) || datos.length !== 5) throw new Error('La IA no devolvió cinco preguntas válidas.');
+  const preguntas = datos.map(q => {
+    if (!q || typeof q.pregunta !== 'string' || q.pregunta.length < 8 || q.pregunta.length > 300 ||
+      !Array.isArray(q.opciones) || q.opciones.length !== 4 ||
+      q.opciones.some(o => typeof o !== 'string' || !o.trim() || o.length > 180) ||
+      !Number.isInteger(q.correcta) || q.correcta < 0 || q.correcta > 3 ||
+      typeof q.explicacion !== 'string' || !q.explicacion.trim() || q.explicacion.length > 600) {
+      throw new Error('La IA devolvió una pregunta con formato inválido.');
+    }
+    return { tema, pregunta: q.pregunta.trim(), opciones: q.opciones.map(o => o.trim()), correcta: q.correcta, explicacion: q.explicacion.trim() };
+  });
+  if (new Set(preguntas.map(q => q.pregunta.toLocaleLowerCase())).size !== preguntas.length) throw new Error('La IA devolvió preguntas repetidas.');
+  return preguntas;
+}
+async function generarPreguntasQuiz(tema) {
+  const cached = quizCache.get(tema);
+  if (cached && Date.now() - cached.generatedAt < QUIZ_CACHE_MS) return { ...cached, cached: true };
+  if (quizRequests.has(tema)) return quizRequests.get(tema);
+  const pending = (async () => {
+    const stale = cached;
+    const providers = disponibles();
+    if (!providers.length) throw new Error('No hay proveedor de IA configurado en el servidor.');
+    const prompt = `Crea exactamente cinco preguntas educativas de opción múltiple sobre "${tema}". Cada pregunta debe tener cuatro opciones, una única respuesta correcta y una explicación breve y comprobable. Evita datos de actualidad, fechas o autoridades que cambien; no inventes fuentes ni presentes contenido como oficial. Devuelve únicamente un arreglo JSON válido con objetos de esta forma: {"pregunta":"...","opciones":["...","...","...","..."],"correcta":0,"explicacion":"..."}. El índice correcta va de 0 a 3.`;
+    let lastError = '';
+    for (const provider of providers) {
+      try {
+        const answer = await PROVEEDORES[provider].llamar({ system: 'Eres un docente cuidadoso. Responde exclusivamente el JSON solicitado, sin Markdown ni texto adicional.', msgs: [{ role: 'user', content: prompt }], files: [] });
+        const result = { tema, questions: validarPreguntasQuiz(answer, tema), generatedAt: Date.now(), cached: false };
+        quizCache.set(tema, result);
+        return result;
+      } catch (e) {
+        lastError = `${PROVEEDORES[provider].nombre}: ${e.message}`;
+        console.warn('No se pudieron generar preguntas del test:', lastError);
+      }
+    }
+    if (stale) return { ...stale, cached: true, stale: true };
+    throw new Error(lastError || 'La IA no pudo generar las preguntas.');
+  })().finally(() => quizRequests.delete(tema));
+  quizRequests.set(tema, pending);
+  return pending;
+}
+async function quiz(req, res) {
+  let body = '';
+  for await (const chunk of req) { body += chunk; if (body.length > 2000) return json(res, 413, { error: 'Solicitud demasiado grande.' }); }
+  let data;
+  try { data = JSON.parse(body); } catch { return json(res, 400, { error: 'JSON inválido.' }); }
+  const tema = data.tema;
+  if (typeof tema !== 'string' || !QUIZ_TOPICS.includes(tema)) return json(res, 400, { error: 'Elige un tema disponible para el test.' });
+  const cached = quizCache.get(tema);
+  const cacheFresh = cached && Date.now() - cached.generatedAt < QUIZ_CACHE_MS;
+  if (!cacheFresh && limiteQuiz(req.headers['x-forwarded-for'] || req.socket.remoteAddress)) return json(res, 429, { error: 'Se alcanzó el límite de generación. Inténtalo más tarde.' });
+  try { return json(res, 200, await generarPreguntasQuiz(tema)); }
+  catch (e) { return json(res, 503, { error: e.message || 'No se pudieron actualizar las preguntas.' }); }
+}
 async function chat(req, res) {
   if (limite(req.headers['x-forwarded-for'] || req.socket.remoteAddress)) return json(res, 429, { error: 'Demasiados mensajes. Espera unos minutos.' });
   let body = '';
@@ -169,6 +230,7 @@ http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
   if (req.method === 'POST' && req.url === '/api/chat') return chat(req, res);
+  if (req.method === 'POST' && req.url === '/api/quiz') return quiz(req, res);
   if (req.method === 'GET' && req.url.startsWith('/api/silabos')) { const u=new URL(req.url,'http://localhost'); const q=u.searchParams.get('q')||''; const career=u.searchParams.get('career')||''; const semester=u.searchParams.get('semester')||''; const turn=u.searchParams.get('turn')||''; return buscarSilabos(q,career,semester,turn,false).then(results=>json(res,200,{total:silabos.length,results:results.map(({score,...x})=>x),pdfTextSearchAvailable:!!pdfParse})); }
   if (req.method === 'GET' && req.url.split('?')[0] === '/api/status') {
     const providers = disponibles().map(p => PROVEEDORES[p].nombre);
