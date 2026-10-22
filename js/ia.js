@@ -96,17 +96,26 @@ function respuestaMotivo(texto) {
 }
 
 
-// ---- Generación de imágenes externa mediante el endpoint público de Pollinations ----
-const PIDE_IMAGEN = /^\s*(dibuja|dibújame|genera (una )?imagen( de)?|crea (una )?imagen( de)?|imagen de)\s+(.+)/i;
-const IMG_PROHIBIDO = /(desnud|sexual|porn|erotic|gore|sangre|violaci|suicid|arma|bomba|droga|nazi)/i;
-function pedirImagen(texto) {
+// ---- Generación de imágenes: el servidor protege las claves de proveedores ----
+const PIDE_IMAGEN = /^\s*(?:(?:dibuja(?:me)?|ilustra|diseña)\s+(.+)|(?:crea|genera|haz(?:me)?)\s+(?:una?\s+)?(imagen|ilustraci[oó]n|logo|dibujo|fotograf[ií]a|p[oó]ster|afiche|infograf[ií]a)\b(.*))$/i;
+const IMG_PROHIBIDO = /(desnud|sexual|porn|erotic|gore|sangre|violaci|suicid|autolesi|nazi|abuso sexual)/i;
+async function pedirImagen(texto) {
   const m = texto.match(PIDE_IMAGEN); if (!m) return null;
-  const tema = m[6].trim().slice(0, 200);
-  if (IMG_PROHIBIDO.test(norm(tema))) return { html: false, text: "No puedo generar imágenes con ese contenido. Prueba con algo educativo: un laboratorio, un taller, un circuito, un logo…", via: "🎨 Imágenes" };
+  const tema = (m[1] || `${m[2]}${m[3] || ""}`).trim().replace(/^(?:una?\s+)?(?:imagen|ilustraci[oó]n|dibujo|fotograf[ií]a)\s+(?:de|sobre|para)\s+/i, "").slice(0, 1000);
+  if (!tema || IMG_PROHIBIDO.test(norm(tema))) return { html: false, text: "No puedo generar imágenes con ese contenido. Prueba con una idea segura, educativa o creativa.", via: "🎨 Imágenes" };
   if (!navigator.onLine) return { html: false, text: "Para generar imágenes necesito internet. Intenta de nuevo cuando estés en línea.", via: "🎨 Imágenes" };
-  const url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(tema + ", digital art, detailed") + "?width=768&height=480&nologo=true";
+  let response, data;
+  try {
+    response = await fetch(API() + "/api/images", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: tema }) });
+    data = await response.json();
+  } catch {
+    return { html: false, text: "No se pudo conectar con el generador de imágenes. Comprueba internet y la dirección del servidor.", via: "🎨 Imágenes" };
+  }
+  if (!response.ok) return { html: false, text: data.error || `El generador de imágenes respondió con HTTP ${response.status}.`, via: "🎨 Imágenes" };
+  if (typeof data.image !== "string" || !/^data:image\/(?:png|jpeg|webp);base64,/.test(data.image)) return { html: false, text: "El proveedor no devolvió una imagen válida.", via: "🎨 Imágenes" };
   const safe = tema.replace(/[<>&"']/g, "");
-  return { html: true, text: `<p>🎨 <b>Solicitando imagen:</b> <i>${safe}</i></p><img class="gen-img" src="${url}" alt="${safe}" loading="lazy"><p class="gen-img-status" role="status">Esperando la respuesta del servicio externo; su disponibilidad y límites dependen del proveedor.</p>`, via: "🎨 Generación de imágenes (Pollinations)" };
+  const extension = data.image.startsWith("data:image/jpeg") ? "jpg" : data.image.startsWith("data:image/webp") ? "webp" : "png";
+  return { html: true, text: `<p>🎨 <b>Imagen:</b> <i>${safe}</i></p><img class="gen-img" src="${data.image}" alt="${safe}" loading="lazy"><p><a class="gen-img-download" href="${data.image}" download="seoaia-imagen.${extension}"><i class="fa-solid fa-download" aria-hidden="true"></i> Descargar imagen</a></p><p class="gen-img-status" role="status">Imagen generada por ${String(data.provider || "el proveedor").replace(/[<>&"']/g, "")}.</p>`, via: `🎨 Generación de imágenes (${data.provider || "nube"})` };
 }
 
 async function responder(o) {
@@ -115,9 +124,8 @@ async function responder(o) {
     const r = respuestaMotivo(o.texto);
     if (r) return { text: r, via: "💬 Orientación" };
   }
-  const img = pedirImagen(o.texto);
+  const img = await pedirImagen(o.texto);
   if (img) {
-    if (!MOTIVO.hecho && img.html) { MOTIVO.hecho = true; MOTIVO.esperando = true; img.text += "<p>💬 <i>Pregunta de SeoaneBot:</i> ¿La imagen es por <b>curiosidad</b>, para una <b>tarea/proyecto</b> o piensas <b>postular</b> al instituto?</p>"; }
     return img;
   }
   const res = await generar(o);

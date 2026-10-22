@@ -137,8 +137,69 @@ async function llamarGemini({ system, msgs, files }) {
 const usos = new Map();
 const limite = ip => { const n = Date.now(), a = (usos.get(ip) || []).filter(t => n - t < 600000); a.push(n); usos.set(ip, a); return a.length > 25; };
 const limiteQuiz = ip => { const n = Date.now(), key = `quiz:${ip}`, a = (usos.get(key) || []).filter(t => n - t < 600000); if (a.length >= 4) { usos.set(key, a); return true; } a.push(n); usos.set(key, a); return false; };
+const limiteImagen = ip => { const n = Date.now(), key = `image:${ip}`, a = (usos.get(key) || []).filter(t => n - t < 600000); if (a.length >= 5) { usos.set(key, a); return true; } a.push(n); usos.set(key, a); return false; };
 
 function json(res, code, obj) { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); }
+
+const IMAGE_BLOCKED = /(desnud|sexual|porn|erotic|gore|sangre|violaci|suicid|autolesi|nazi|abuso sexual)/i;
+function imagenConfigurada() {
+  const provider = (E.IMAGE_PROVIDER || 'pollinations').toLowerCase();
+  return { provider, configured: provider === 'openai' ? real(E.OPENAI_API_KEY) : provider === 'gemini' ? real(E.GEMINI_API_KEY) : provider === 'pollinations' };
+}
+function imagenDataUrl(mime, bytes) {
+  if (!/^image\/(?:png|jpeg|webp)$/.test(mime) || !bytes.length || bytes.length > 8 * 1024 * 1024) throw new Error('El proveedor devolvió una imagen no válida o demasiado grande.');
+  return `data:${mime};base64,${bytes.toString('base64')}`;
+}
+async function generarImagen(prompt) {
+  const { provider, configured } = imagenConfigurada();
+  if (!['openai', 'gemini', 'pollinations'].includes(provider)) throw new Error('IMAGE_PROVIDER debe ser openai, gemini o pollinations.');
+  if (!configured) throw new Error(`Configura la clave del proveedor ${provider} en el servidor.`);
+  const signal = AbortSignal.timeout(Number(E.IMAGE_TIMEOUT_MS) || 120000);
+  if (provider === 'openai') {
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST', headers: { authorization: `Bearer ${E.OPENAI_API_KEY}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ model: E.OPENAI_IMAGE_MODEL || 'gpt-image-1', prompt, size: '1024x1024' }), signal
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error?.message || `OpenAI respondió HTTP ${response.status}.`);
+    const encoded = result.data?.[0]?.b64_json;
+    if (typeof encoded !== 'string') throw new Error('OpenAI no devolvió los datos de la imagen.');
+    return { image: imagenDataUrl('image/png', Buffer.from(encoded, 'base64')), provider: 'OpenAI' };
+  }
+  if (provider === 'gemini') {
+    const model = E.GEMINI_IMAGE_MODEL || 'gemini-2.0-flash-preview-image-generation';
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: 'POST', headers: { 'x-goog-api-key': E.GEMINI_API_KEY, 'content-type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: `Genera una imagen original basada en esta solicitud: ${prompt}` }] }], generationConfig: { responseModalities: ['TEXT', 'IMAGE'] } }), signal
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error?.message || `Gemini respondió HTTP ${response.status}.`);
+    const part = result.candidates?.flatMap(candidate => candidate.content?.parts || []).find(item => item.inlineData?.data);
+    if (!part) throw new Error('Gemini no devolvió datos de imagen. Verifica que el modelo configurado admita generación de imágenes.');
+    return { image: imagenDataUrl(part.inlineData.mimeType || 'image/png', Buffer.from(part.inlineData.data, 'base64')), provider: 'Gemini' };
+  }
+  if (provider === 'pollinations') {
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true`;
+    const response = await fetch(url, { signal });
+    if (!response.ok) throw new Error(`Pollinations respondió HTTP ${response.status}.`);
+    const mime = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+    const length = Number(response.headers.get('content-length') || 0);
+    if (length > 8 * 1024 * 1024) throw new Error('La imagen generada supera el tamaño permitido.');
+    return { image: imagenDataUrl(mime, Buffer.from(await response.arrayBuffer())), provider: 'Pollinations' };
+  }
+}
+async function images(req, res) {
+  let body = '';
+  for await (const chunk of req) { body += chunk; if (body.length > 5000) return json(res, 413, { error: 'La descripción de la imagen es demasiado larga.' }); }
+  let data;
+  try { data = JSON.parse(body); } catch { return json(res, 400, { error: 'JSON inválido.' }); }
+  if (typeof data.prompt !== 'string' || !data.prompt.trim() || data.prompt.length > 1000) return json(res, 400, { error: 'Escribe una descripción de imagen de hasta 1000 caracteres.' });
+  if (IMAGE_BLOCKED.test(data.prompt)) return json(res, 400, { error: 'No puedo generar imágenes con ese contenido. Prueba con una idea segura, educativa o creativa.' });
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  if (limiteImagen(ip)) return json(res, 429, { error: 'Alcanzaste el límite temporal de generación de imágenes. Inténtalo más tarde.' });
+  try { return json(res, 200, await generarImagen(data.prompt.trim())); }
+  catch (e) { console.warn('Falló la generación de imágenes:', e.message); return json(res, 502, { error: e.message || 'No se pudo generar la imagen.' }); }
+}
 
 function validarPreguntasQuiz(texto, tema) {
   const contenido = texto.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
@@ -231,11 +292,13 @@ http.createServer((req, res) => {
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
   if (req.method === 'POST' && req.url === '/api/chat') return chat(req, res);
   if (req.method === 'POST' && req.url === '/api/quiz') return quiz(req, res);
+  if (req.method === 'POST' && req.url === '/api/images') return images(req, res);
   if (req.method === 'GET' && req.url.startsWith('/api/silabos')) { const u=new URL(req.url,'http://localhost'); const q=u.searchParams.get('q')||''; const career=u.searchParams.get('career')||''; const semester=u.searchParams.get('semester')||''; const turn=u.searchParams.get('turn')||''; return buscarSilabos(q,career,semester,turn,false).then(results=>json(res,200,{total:silabos.length,results:results.map(({score,...x})=>x),pdfTextSearchAvailable:!!pdfParse})); }
   if (req.method === 'GET' && req.url.split('?')[0] === '/api/status') {
     const providers = disponibles().map(p => PROVEEDORES[p].nombre);
     const configured = providers.length > 0;
-    return json(res, 200, { ai: false, configured, connection: 'not_checked', providers, error: configured ? null : 'No hay proveedores de IA configurados en las variables privadas del servidor.', syllabiFiles: silabos.length, pdfTextSearchAvailable: !!pdfParse });
+    const image = imagenConfigurada();
+    return json(res, 200, { ai: false, configured, connection: 'not_checked', providers, imageGeneration: { configured: image.configured, provider: image.provider }, error: configured ? null : 'No hay proveedores de IA configurados en las variables privadas del servidor.', syllabiFiles: silabos.length, pdfTextSearchAvailable: !!pdfParse });
   }
   let p = decodeURIComponent(req.url.split('?')[0]); if (p === '/') p = '/index.html'; if (RUTAS[p]) p = RUTAS[p];
   const f = path.join(__dirname, path.normalize(p));

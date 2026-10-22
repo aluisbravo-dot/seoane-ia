@@ -27,6 +27,7 @@ const CARRERAS_DATA = [
   // ---------------------------------------------------------------- DSI
   {
     id: "dsi", nombre: "Desarrollo de Sistemas de Información", categoria: "tecnologia", imagen: "img/plana-anime/dsi.jpg",
+    versiculos: [{ referencia: "Proverbios 16:3", idea: "Planificar y encomendar el trabajo invita a actuar con propósito." }, { referencia: "Colosenses 3:23", idea: "Realizar el trabajo con dedicación y esmero." }],
     duracion: "3 años (6 semestres)", icono: "fa-laptop-code", emoji: "💻", logo: "DSI", polo: "#2563eb", pelo: "#1e1b4b", estilo: "corto",
     resumen: "Diseña y administra sitios y sistemas web, trabaja con multimedia y animación de gráficos y aprende a gestionar plataformas web y a emprender en tecnología.",
     perfil: "Egresado capaz de diseñar páginas y sistemas web, producir contenido multimedia, administrar y mantener plataformas web, comunicarse con claridad y crear su propia empresa de servicios digitales.",
@@ -56,6 +57,7 @@ const CARRERAS_DATA = [
   // -------------------------------------------------------------- Enfermería
   {
     id: "enfermeria", nombre: "Enfermería Técnica", categoria: "salud", imagen: "img/plana-anime/enfermeria.jpg",
+    versiculos: [{ referencia: "Gálatas 6:2", idea: "Acompañar y apoyar a quienes atraviesan dificultades." }, { referencia: "Proverbios 31:8-9", idea: "Alzar la voz en favor de quienes necesitan protección y justicia." }],
     duracion: "3 años (6 semestres)", icono: "fa-user-nurse", emoji: "🩺", logo: "ENF", polo: "#0d9488", pelo: "#9d174d", estilo: "coletas",
     resumen: "Formación para apoyar la atención de salud: madres y gestantes, niños y adolescentes, adultos mayores y personas con problemas de salud mental, con ética y trato humano.",
     perfil: "Egresado que presta asistencia técnica de enfermería en el cuidado de gestantes, niños, adolescentes, adultos mayores y pacientes con problemas de salud mental, respetando derechos del paciente y secreto profesional.",
@@ -87,6 +89,7 @@ const CARRERAS_DATA = [
   // ----------------------------------------------------------- Contabilidad
   {
     id: "contabilidad", nombre: "Contabilidad", categoria: "gestion", imagen: "img/plana-anime/contabilidad.jpg",
+    versiculos: [{ referencia: "Proverbios 11:1", idea: "Actuar con honestidad y justicia en las transacciones." }, { referencia: "Lucas 16:10", idea: "Ser fiel y responsable también en las tareas pequeñas." }],
     duracion: "3 años (6 semestres)", icono: "fa-calculator", emoji: "📊", logo: "CONT", polo: "#059669", pelo: "#78350f", estilo: "largo",
     resumen: "Aprende a registrar y analizar la información financiera de las empresas: finanzas, evaluación de proyectos, auditoría y contabilidad de entidades financieras.",
     perfil: "Egresado que apoya el registro contable, el análisis financiero, la evaluación de proyectos y la planificación de auditoría, y que puede formalizar y gestionar su propia empresa.",
@@ -117,6 +120,7 @@ const CARRERAS_DATA = [
   // ----------------------------------------------------------- Electrotecnia
   {
     id: "electrotecnia", nombre: "Electricidad Industrial / Electrotecnia Industrial", categoria: "ingenieria", imagen: "img/plana-anime/electricidad.jpg",
+    versiculos: [{ referencia: "Eclesiastés 9:10", idea: "Poner empeño en el trabajo que se tiene por delante." }, { referencia: "Proverbios 24:3-4", idea: "La sabiduría y el conocimiento ayudan a construir y equipar una obra." }],
     duracion: "3 años (6 semestres)", icono: "fa-bolt", emoji: "⚡", logo: "ELEC", polo: "#ea580c", pelo: "#ca8a04", estilo: "puas",
     resumen: "Aprende control automático, electrónica de potencia, y electroneumática y electrohidráulica para instalar, operar y mantener sistemas eléctricos y automatizados.",
     perfil: "Egresado que modela, programa y regula sistemas automatizados, trabaja con variadores y convertidores de potencia y diseña e implementa circuitos de mando eléctrico, neumático e hidráulico.",
@@ -145,6 +149,7 @@ const CARRERAS_DATA = [
   // ----------------------------------------------------------- Automotriz
   {
     id: "automotriz", nombre: "Mecatrónica Automotriz", categoria: "ingenieria", imagen: "img/plana-anime/mecatronica.jpg",
+    versiculos: [{ referencia: "Proverbios 22:29", idea: "La habilidad y la diligencia en un oficio pueden abrir oportunidades." }, { referencia: "Eclesiastés 9:10", idea: "Realizar con empeño el trabajo que se tiene por delante." }],
     duracion: "3 años (6 semestres)", icono: "fa-car-side", emoji: "🚗", logo: "AUTO", polo: "#dc2626", pelo: "#27272a", estilo: "puas",
     resumen: "Aprende motores de combustión interna a gasolina (ciclo Otto), pruebas en laboratorio de motores y conversión a combustibles alternos como GLP y GNV.",
     perfil: "Egresado que desarma, diagnostica, repara y da mantenimiento a motores, mide tolerancias con instrumentos de precisión y realiza la conversión de vehículos a combustibles alternos.",
@@ -174,6 +179,7 @@ const CARRERAS_DATA = [
   // ----------------------------------------------------------- Mecánica de Producción
   {
     id: "mecanica-prod", nombre: "Mecánica de Producción Industrial", categoria: "ingenieria", imagen: "img/plana-anime/mecanica-produccion.jpg",
+    versiculos: [{ referencia: "Éxodo 31:3-5", idea: "La creatividad y la destreza manual también pueden ser dones para construir." }, { referencia: "Proverbios 22:29", idea: "La práctica y la habilidad en un oficio merecen dedicación." }],
     duracion: "3 años (6 semestres)", icono: "fa-gears", emoji: "⚙️", logo: "MEC", polo: "#475569", pelo: "#44403c", estilo: "corto",
     resumen: "Aprende modelería y fundición, moldes permanentes, matrices para chapa metálica y tratamientos térmicos y ensayos de materiales.",
     perfil: "Egresado que elabora modelos y piezas fundidas, trabaja con moldes y matrices de chapa, aplica tratamientos térmicos y realiza ensayos para controlar la calidad de las piezas.",
@@ -204,6 +210,7 @@ const CARRERAS_DATA = [
   // ----------------------------------------------------------- Química Industrial
   {
     id: "quimica", nombre: "Química Industrial", categoria: "ingenieria", imagen: "img/plana-anime/quimica.jpg",
+    versiculos: [{ referencia: "Génesis 2:15", idea: "Cuidar y cultivar la creación como una responsabilidad." }, { referencia: "Proverbios 25:2", idea: "Investigar con atención puede ayudar a comprender mejor las cosas." }],
     duracion: "3 años (6 semestres)", icono: "fa-flask", emoji: "🧪", logo: "QUIM", polo: "#7c3aed", pelo: "#0f766e", estilo: "bob",
     resumen: "Aprende control de calidad de productos inorgánicos, tratamiento de aguas residuales industriales, metrología y sistemas de calidad (ISO 9001 e ISO/IEC 17025).",
     perfil: "Egresado que analiza insumos y productos en laboratorio, opera procesos de tratamiento de efluentes, calibra y verifica equipos y aplica sistemas de calidad con cumplimiento ambiental (LMP y ECA).",

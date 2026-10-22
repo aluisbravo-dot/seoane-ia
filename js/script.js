@@ -29,6 +29,7 @@ function renderCarreras(data) {
         <h3 class="carrera-title"><i class="fa-solid ${c.icono}"></i> ${c.nombre}</h3>
         <div class="carrera-meta"><span><i class="fa-solid fa-clock"></i> ${c.duracion}</span><span><i class="fa-solid fa-graduation-cap"></i> Gratuito</span></div>
         <p class="carrera-desc">${c.resumen}</p>
+        ${c.versiculos ? `<div class="carrera-verses" aria-label="Referencias bíblicas de inspiración"><strong><i class="fa-solid fa-book-bible" aria-hidden="true"></i> Inspiración bíblica (opcional)</strong>${c.versiculos.map(v => `<p><b>${esc(v.referencia)}:</b> ${esc(v.idea)}</p>`).join("")}</div>` : ""}
       </div>
       <button class="card-btn" onclick="verDetalleCarrera('${c.id}')"><i class="fa-solid fa-circle-info"></i> Ver malla y detalles</button>`;
     container.appendChild(card);
@@ -76,6 +77,7 @@ function verDetalleCarrera(id) {
     <ul>${li(c.ideal, "fa-check-circle", "#10b981")}</ul>
     <ul>${li(c.noIdeal, "fa-circle-xmark", "#f87171")}</ul>
     <h3 class="mt">Campo laboral</h3><ul>${li(c.campoLaboral, "fa-briefcase", "#38bdf8")}</ul>
+    ${c.versiculos ? `<h3 class="mt"><i class="fa-solid fa-book-bible" aria-hidden="true"></i> Referencias bíblicas para inspirar tu camino</h3><p class="verse-note">Lecturas opcionales de inspiración personal; no representan una postura religiosa oficial del instituto.</p><div class="career-verses-detail">${c.versiculos.map(v => `<article><strong>${esc(v.referencia)}</strong><p>${esc(v.idea)}</p></article>`).join("")}</div>` : ""}
     <h3 class="mt">La IA en esta carrera</h3><p>${c.guiaPadres.iaTemorOReto}</p>
     <p><small>Herramientas: ${c.herramientasIA.join(" · ")}</small></p>
     <div class="modal-actions">
@@ -137,7 +139,7 @@ async function enviarChat(texto) {
       const markImageResult = loaded => {
         if (loaded) {
           assistantEntry.content = "[imagen generada y recibida]";
-          if (status) status.textContent = "Imagen recibida del servicio externo Pollinations.";
+          if (status && !status.textContent.startsWith("Imagen generada")) status.textContent = "Imagen generada y recibida.";
         } else {
           assistantEntry.content = "[no se pudo obtener la imagen]";
           if (status) status.textContent = "El servicio externo no devolvió una imagen. Inténtalo más tarde.";

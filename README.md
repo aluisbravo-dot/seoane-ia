@@ -36,5 +36,11 @@ Abre `/api/status`. El servicio debe responder HTTP 200. El indicador de IA en l
 
 El test de cultura general genera cinco preguntas por tema mediante el proveedor de IA configurado en el servidor (`POST /api/quiz`). Las preguntas se guardan en caché en memoria durante seis horas y se vuelven a generar cuando alguien solicita ese tema después de vencer la caché. Si la IA no está disponible, la web utiliza las preguntas locales; el test también incluye lectura por voz del navegador, reto con tiempo y repaso de errores.
 
+La generación de imágenes pasa por `POST /api/images` para no exponer claves en el navegador. Por defecto usa Pollinations; en Render se puede seleccionar `IMAGE_PROVIDER=openai` con `OPENAI_API_KEY` y, opcionalmente, `OPENAI_IMAGE_MODEL`, o `IMAGE_PROVIDER=gemini` con `GEMINI_API_KEY` y `GEMINI_IMAGE_MODEL`. Los nombres y la disponibilidad de modelos dependen de cada proveedor; configura un modelo de imágenes habilitado para tu cuenta. Las claves solo deben guardarse como variables privadas del servicio.
+
+En el chat puedes pedir imágenes con frases como «Dibuja un gato astronauta», «Crea un logo para mi taller» o «Genera una infografía sobre reciclaje». La descripción admite hasta 1000 caracteres; el servidor limita el uso a cinco solicitudes por IP cada diez minutos y muestra un enlace para descargar la imagen.
+
+Cada tarjeta y detalle de carrera incluye dos referencias bíblicas opcionales, resumidas como inspiración personal y sin atribuir una postura religiosa oficial al instituto.
+
 ## Notas de esta revisión
 Se corrigió la metadata de `package.json` para que identifique la versión 20. Se actualizaron estas instrucciones para reflejar la estructura real del paquete. No se incorporan documentos Word de exposición o revisión dentro de la aplicación.
