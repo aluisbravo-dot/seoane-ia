@@ -438,6 +438,36 @@ function renderBalotario() {
  const names={contabilidad:'Contabilidad', 'desarrollo-sistemas-informacion':'Desarrollo de Sistemas de Información','electricidad-industrial':'Electricidad Industrial / Electrotecnia Industrial','enfermeria-tecnica':'Enfermería Técnica','mecanica-produccion-industrial':'Mecánica de Producción Industrial','mecatronica-automotriz':'Mecatrónica Automotriz','quimica-industrial':'Química Industrial'};
  Object.entries(names).forEach(([v,label])=>{const o=document.createElement('option');o.value=v;o.textContent=label;career.appendChild(o)});
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- async function run(){ results.innerHTML='<span class="syllabus-hint">Buscando en la biblioteca…</span>'; const p=new URLSearchParams({q:query.value.trim(),career:career.value,semester:semester.value,turn:turn.value}); let found=[]; try{ if(navigator.onLine){const r=await fetch((window.SEOANE_API||'')+'/api/silabos?'+p.toString()); if(!r.ok) throw new Error('Servidor no disponible'); const d=await r.json(); found=d.results||[];} else { throw new Error('offline'); } }catch(e){ try{const r=await fetch('js/silabos-offline.json'); if(!r.ok) throw e; const all=await r.json(); const normText=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); const q=normText(query.value.trim()); found=all.filter(x=>(!career.value||x.career===career.value)&&(!semester.value||x.semester.toUpperCase()===semester.value.toUpperCase())&&(!turn.value||x.turn===turn.value)&&(!q||normText(x.name+' '+x.career+' '+x.semester+' '+x.turn).includes(q))).slice(0,40); }catch(err){results.innerHTML='<span class="syllabus-hint">No se pudo abrir la biblioteca guardada. Conéctate una vez a Internet y vuelve a intentarlo.</span>';return;} } if(!found.length){results.innerHTML='<span class="syllabus-hint">No hay coincidencias con esos filtros. Prueba otro nombre o semestre.</span>';return;} results.innerHTML=(navigator.onLine?'':'<p class="offline-note">Modo sin conexión: búsqueda por nombre de archivo. Para buscar dentro del contenido del PDF se necesita el servidor.</p>')+found.map(x=>`<div class="syllabus-result"><div><strong>${esc(x.name)}</strong><small>${esc(names[x.career]||x.career)} · Semestre ${esc(x.semester)} · ${esc(x.turn==='DIA'?'Día':x.turn==='NOCHE'?'Noche':x.turn)}</small></div><a href="${esc(x.path)}" target="_blank" rel="noopener">Abrir PDF <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>`).join(''); }
+ async function run(){
+  results.innerHTML='<span class="syllabus-hint">Buscando en la biblioteca…</span>';
+  const p=new URLSearchParams({q:query.value.trim(),career:career.value,semester:semester.value,turn:turn.value});
+  let found=[];
+  try{
+   if(navigator.onLine){
+    const r=await fetch((window.SEOANE_API||'')+'/api/silabos?'+p.toString());
+    if(!r.ok) throw new Error('Servidor no disponible');
+    const d=await r.json();
+    found=d.results||[];
+   }else throw new Error('offline');
+  }catch(e){
+   try{
+    const r=await fetch('js/silabos-offline.json');
+    if(!r.ok) throw e;
+    const all=await r.json();
+    const normText=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const q=normText(query.value.trim());
+    found=all.filter(x=>(!career.value||x.career===career.value)&&(!semester.value||x.semester.toUpperCase()===semester.value.toUpperCase())&&(!turn.value||x.turn===turn.value)&&(!q||normText(x.name+' '+x.career+' '+x.semester+' '+x.turn).includes(q))).slice(0,40);
+   }catch(err){
+    results.innerHTML='<span class="syllabus-hint">No se pudo abrir la biblioteca guardada. Conéctate una vez a Internet y vuelve a intentarlo.</span>';
+    return;
+   }
+  }
+  if(!found.length){
+   results.innerHTML='<span class="syllabus-hint">No hay coincidencias con esos filtros. Prueba otro nombre o semestre.</span>';
+   return;
+  }
+  const turnName=x=>x.turn==='DIA'?'Día':x.turn==='NOCHE'?'Noche':x.turn;
+  results.innerHTML=(navigator.onLine?'':'<p class="offline-note">Modo sin conexión: búsqueda por nombre de archivo. Para buscar dentro del contenido del PDF se necesita el servidor.</p>')+found.map(x=>`<div class="syllabus-result"><div><strong>${esc(x.name)}</strong><small>${esc(names[x.career]||x.career)} · Semestre ${esc(x.semester)} · ${esc(turnName(x))}</small></div><a href="${esc(x.path)}" target="_blank" rel="noopener">Abrir PDF <i class="fa-solid fa-arrow-up-right-from-square"></i></a><a href="${esc(x.path)}" download="${esc(x.name)}" aria-label="Descargar ${esc(x.name)}">Descargar PDF <i class="fa-solid fa-download"></i></a></div>`).join('');
+ }
  btn.addEventListener('click',run); query.addEventListener('keydown',e=>{if(e.key==='Enter')run()}); [career,semester,turn].forEach(el=>el.addEventListener('change',()=>{if(query.value.trim())run()}));
 })();
