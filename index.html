@@ -20,46 +20,19 @@
       <a href="#" class="brand">
         <img src="img/escudo-referencia.png" alt="Escudo de referencia del Instituto Manuel Seoane Corrales" width="48" height="48">
         <div class="brand-text">
-          <span class="brand-title">SeoaIA · IESTP Manuel Seoane Corrales</span>
-          <span class="brand-sub">Asistente inteligente · Educación técnica pública</span>
+          <span class="brand-title">SeoaIA</span>
+          <span class="brand-sub">IESTP Manuel Seoane Corrales</span>
         </div>
       </a>
-      <nav class="nav-links">
-        <a href="#hero"><i class="fa-solid fa-house"></i> Inicio</a>
-        <a href="carreras.html"><i class="fa-solid fa-graduation-cap"></i> 7 Carreras</a>
-        <a href="#plana-docente"><i class="fa-solid fa-chalkboard-user"></i> Plana docente</a>
-        <a href="biblioteca.html"><i class="fa-solid fa-folder-open"></i> Biblioteca</a>
-        <a href="#seccion-ia"><i class="fa-solid fa-robot"></i> Asistente IA</a>
-        <a href="#seoaia-automatiza"><i class="fa-solid fa-wand-magic-sparkles"></i> Automatización IA</a>
-        <a href="#seccion-quiz"><i class="fa-solid fa-brain"></i> Test Vocacional</a>
-        <a href="padres.html"><i class="fa-solid fa-people-roof"></i> Padres</a>
-        <a href="mercado-laboral.html"><i class="fa-solid fa-chart-line"></i> Empleo</a>
-        <a href="balotario.html"><i class="fa-solid fa-book-open"></i> Balotario</a>
-        <a href="#contacto"><i class="fa-solid fa-envelope"></i> Contacto</a>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="#hero">Inicio</a>
+        <a href="#seccion-ia">Chat</a>
+        <a href="#carreras">Carreras</a>
+        <a href="#recursos">Recursos</a>
       </nav>
       <button id="theme-toggle" class="btn-icon" title="Cambiar Tema"><i class="fa-solid fa-moon"></i></button>
     </div>
   </header>
-
-  <!-- Navegación lateral inspirada en la referencia visual solicitada -->
-  <aside class="seoaia-sidebar" aria-label="Navegación principal">
-    <nav>
-      <a class="side-active" href="#hero"><i class="fa-solid fa-house"></i><span>Inicio</span></a>
-      <a href="#seccion-ia"><i class="fa-regular fa-message"></i><span>Chat SeoaIA</span></a>
-      <a href="#seoaia-automatiza"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Automatización IA</span></a>
-      <a href="#carreras"><i class="fa-solid fa-graduation-cap"></i><span>Carreras</span></a>
-      <a href="#seccion-ia"><i class="fa-solid fa-book-open"></i><span>Sílabos</span></a>
-      <a href="#recursos"><i class="fa-solid fa-file-lines"></i><span>Trámites y recursos</span></a>
-      <a href="#proyectos"><i class="fa-solid fa-lightbulb"></i><span>Proyectos</span></a>
-      <a href="#plana-docente"><i class="fa-solid fa-users"></i><span>Plana docente</span></a>
-      <a href="#anexos"><i class="fa-solid fa-folder-open"></i><span>Anexos del instituto</span></a>
-      <a href="#seccion-quiz"><i class="fa-solid fa-calendar-days"></i><span>Test vocacional</span></a>
-      <a href="padres.html"><i class="fa-solid fa-people-roof"></i><span>Padres</span></a>
-      <a href="mercado-laboral.html"><i class="fa-solid fa-chart-line"></i><span>Empleo</span></a>
-      <a href="#contacto"><i class="fa-solid fa-location-dot"></i><span>Contacto</span></a>
-    </nav>
-    <div class="sidebar-extra-links"><a href="carreras.html"><i class="fa-solid fa-graduation-cap"></i> Explorar carreras</a><a href="biblioteca.html"><i class="fa-solid fa-book-open"></i> Biblioteca académica</a><a href="proyectos.html"><i class="fa-solid fa-lightbulb"></i> Proyectos</a></div><div class="sidebar-institute"><strong>IESTP Manuel Seoane Corrales</strong><small>San Juan de Lurigancho · Lima</small><a href="https://seoane.edu.pe" target="_blank" rel="noopener">Portal oficial <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
-  </aside>
 
   <!-- SeoaIA institutional dashboard -->
   <section id="hero" class="hero dashboard-hero">
@@ -101,35 +74,46 @@
   <section id="seccion-ia" class="section bg-alt">
     <div class="container">
       <div class="section-title">
-        <h2><i class="fa-solid fa-robot"></i> Asistente Virtual SeoaIA</h2>
-        <p>Pregunta por las carreras, la admisión, el empleo o cualquier tema. Puedes escribir o activar el modo de voz para conversar hablando y escuchar las respuestas.</p>
+        <h2><i class="fa-solid fa-robot"></i> Conversa con SeoaIA</h2>
+        <p>Resuelve dudas académicas e institucionales. Escribe tu consulta o usa la voz.</p>
       </div>
       <div class="chat-wrapper">
         <div class="chat-header">
           <div class="avatar" id="chat-avatar" role="img" aria-label="Asistente SeoaIA"><i class="fa-solid fa-robot chat-avatar-icon" aria-hidden="true"></i></div>
           <div class="chat-title">
-            <strong>SeoaIA · Asistente IA</strong>
+            <strong>SeoaIA</strong>
             <span class="status-online" id="ia-estado">Cargando estado…</span>
           </div>
         </div>
         <div class="chat-tools">
-          <label>Carrera: <select id="chat-carrera"></select></label>
-          <label>Modo: <select id="chat-modo"><option value="auto">Automático (recomendado)</option><option value="nube">Solo nube</option><option value="local">Solo IA local</option><option value="base">Solo sin conexión</option></select></label>
-          <label>IA local: <select id="chat-modelo"><option value="ligero">Ligera (~400 MB)</option><option value="mejor">Mejor (~1 GB)</option></select></label>
-          <button class="chip" id="chat-bajar"><i class="fa-solid fa-download"></i> Descargar IA local</button>
-          <button class="chip" id="chat-limpiar"><i class="fa-solid fa-trash"></i> Nueva conversación</button>
-          <progress id="chat-prog" max="1" value="0" hidden></progress>
+          <label for="chat-carrera">Carrera <select id="chat-carrera"></select></label>
+          <button class="chip" id="chat-limpiar"><i class="fa-solid fa-rotate-left"></i> Nueva conversación</button>
         </div>
         <div id="chat-box" class="chat-box"></div>
-        <div class="syllabus-search-panel" aria-label="Buscador de sílabos"><div class="syllabus-search-title"><i class="fa-solid fa-magnifying-glass"></i><div><strong>Buscar en los sílabos cargados</strong><small>Busca por curso, carrera, semestre o turno. Los archivos se abren desde la biblioteca del proyecto.</small></div></div><div class="syllabus-search-controls"><select id="syllabus-career" aria-label="Carrera"><option value="">Todas las carreras</option></select><select id="syllabus-semester" aria-label="Semestre"><option value="">Todos los semestres</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option><option>VI</option></select><select id="syllabus-turn" aria-label="Turno"><option value="">Día y noche</option><option value="DIA">Día</option><option value="NOCHE">Noche</option></select><input id="syllabus-query" type="search" placeholder="Ej. Java, Contabilidad de costos..." aria-label="Buscar sílabo"><button id="syllabus-search-btn" type="button" class="btn btn-primary"><i class="fa-solid fa-search"></i> Buscar</button></div><div id="syllabus-results" class="syllabus-results" aria-live="polite"><span class="syllabus-hint">Elige filtros o escribe el nombre de un curso para encontrar los PDF disponibles.</span></div></div>
+        <details class="chat-extra">
+          <summary>Buscar en los sílabos</summary>
+          <div class="syllabus-search-panel" aria-label="Buscador de sílabos"><div class="syllabus-search-title"><i class="fa-solid fa-magnifying-glass"></i><div><strong>Buscar en los sílabos cargados</strong><small>Busca por curso, carrera, semestre o turno. Los archivos se abren desde la biblioteca del proyecto.</small></div></div><div class="syllabus-search-controls"><select id="syllabus-career" aria-label="Carrera"><option value="">Todas las carreras</option></select><select id="syllabus-semester" aria-label="Semestre"><option value="">Todos los semestres</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option><option>VI</option></select><select id="syllabus-turn" aria-label="Turno"><option value="">Día y noche</option><option value="DIA">Día</option><option value="NOCHE">Noche</option></select><input id="syllabus-query" type="search" placeholder="Ej. Java, Contabilidad de costos..." aria-label="Buscar sílabo"><button id="syllabus-search-btn" type="button" class="btn btn-primary"><i class="fa-solid fa-search"></i> Buscar</button></div><div id="syllabus-results" class="syllabus-results" aria-live="polite"><span class="syllabus-hint">Elige filtros o escribe el nombre de un curso para encontrar los PDF disponibles.</span></div></div>
+        </details>
         <div class="chat-suggestions" aria-label="Consultas sugeridas"><button type="button" data-prompt="¿Qué cursos contiene mi sílabo?">Consultar sílabos</button><button type="button" data-prompt="Explícame un tema paso a paso">Explicar un tema</button><button type="button" data-prompt="Ayúdame a organizar un proyecto académico">Ayuda con proyectos</button><button type="button" data-prompt="¿Qué trámites institucionales puedo consultar?">Trámites</button></div>
         <div class="chat-chips" id="chat-chips"></div>
         <div class="chat-chips" id="chat-adjuntos"></div>
-        <div class="chat-voice-tools" aria-label="Controles de voz"><button type="button" id="voice-start" class="chip" title="Hablar con SeoaIA"><i class="fa-solid fa-microphone"></i> Hablar</button><button type="button" id="voice-stop" class="chip" title="Detener escucha" disabled><i class="fa-solid fa-stop"></i> Detener</button><label class="voice-read-toggle"><input type="checkbox" id="voice-read" checked> Leer respuestas en voz alta</label><button type="button" id="voice-reference-play" class="chip" title="Reproducir el audio original enviado" aria-pressed="false"><i class="fa-solid fa-headphones"></i> Audio enviado</button><audio id="voice-reference-audio" preload="none" src="voz/voz-referencia.mp3"></audio><span id="voice-status" role="status" aria-live="polite">Voz lista si tu navegador la admite</span></div>
+        <details class="chat-extra">
+          <summary>Opciones del asistente</summary>
+          <div class="chat-tools chat-advanced-tools">
+            <label for="chat-modo">Modo <select id="chat-modo"><option value="auto">Automático (recomendado)</option><option value="nube">Solo nube</option><option value="local">Solo IA local</option><option value="base">Solo sin conexión</option></select></label>
+            <label for="chat-modelo">IA local <select id="chat-modelo"><option value="ligero">Ligera (~400 MB)</option><option value="mejor">Mejor (~1 GB)</option></select></label>
+            <button class="chip" id="chat-bajar"><i class="fa-solid fa-download"></i> Descargar IA local</button>
+            <progress id="chat-prog" max="1" value="0" hidden></progress>
+          </div>
+        </details>
+        <details class="chat-extra">
+          <summary>Usar voz</summary>
+          <div class="chat-voice-tools" aria-label="Controles de voz"><button type="button" id="voice-start" class="chip" title="Hablar con SeoaIA"><i class="fa-solid fa-microphone"></i> Hablar</button><button type="button" id="voice-stop" class="chip" title="Detener escucha" disabled><i class="fa-solid fa-stop"></i> Detener</button><label class="voice-read-toggle"><input type="checkbox" id="voice-read" checked> Leer respuestas en voz alta</label><button type="button" id="voice-reference-play" class="chip" title="Reproducir el audio original enviado" aria-pressed="false"><i class="fa-solid fa-headphones"></i> Audio enviado</button><audio id="voice-reference-audio" preload="none" src="voz/voz-referencia.mp3"></audio><span id="voice-status" role="status" aria-live="polite">Voz lista si tu navegador la admite</span></div>
+        </details>
         <div class="chat-input-area">
           <label class="clip" title="Adjuntar foto, PDF o texto"><i class="fa-solid fa-paperclip"></i><input type="file" id="chat-file" multiple hidden accept="image/*,.pdf,.txt,.md,.csv,.json"></label>
-          <input type="text" id="chat-input" placeholder="Escribe tu consulta (ej. ¿Le conviene Química Industrial a mi hijo?, 1+1, ¿cómo postulo?)" autocomplete="off">
-          <button id="chat-send" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+          <input type="text" id="chat-input" placeholder="Escribe tu consulta…" autocomplete="off" aria-label="Escribe tu consulta">
+          <button id="chat-send" class="btn btn-primary" aria-label="Enviar consulta"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
       </div>
     </div>

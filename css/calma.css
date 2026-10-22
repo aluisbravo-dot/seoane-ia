@@ -29,22 +29,18 @@ body[data-theme="light"] {
 .nav-links a,
 .section-title h2,
 .carrera-title,
-.section-eyebrow,
-.sidebar-extra-links a,
-.sidebar-institute strong {
+.section-eyebrow {
   color: #34485d !important;
 }
 
 .brand-sub,
 .section-title p,
 .carrera-desc,
-.carrera-meta,
-.sidebar-institute small {
+.carrera-meta {
   color: #697785 !important;
 }
 
-.nav-links a:hover,
-.sidebar-extra-links a:hover {
+.nav-links a:hover {
   color: #536b83 !important;
 }
 
@@ -322,8 +318,6 @@ body:not([data-theme="light"]) .nav-links a,
 body:not([data-theme="light"]) .section-title h2,
 body:not([data-theme="light"]) .carrera-title,
 body:not([data-theme="light"]) .section-eyebrow,
-body:not([data-theme="light"]) .sidebar-extra-links a,
-body:not([data-theme="light"]) .sidebar-institute strong,
 body:not([data-theme="light"]) .faculty-card h3,
 body:not([data-theme="light"]) .annex-card strong,
 body:not([data-theme="light"]) .recurso-card strong,
@@ -336,7 +330,6 @@ body:not([data-theme="light"]) .brand-sub,
 body:not([data-theme="light"]) .section-title p,
 body:not([data-theme="light"]) .carrera-desc,
 body:not([data-theme="light"]) .carrera-meta,
-body:not([data-theme="light"]) .sidebar-institute small,
 body:not([data-theme="light"]) .faculty-card p,
 body:not([data-theme="light"]) .faculty-card small,
 body:not([data-theme="light"]) .annex-card small,
@@ -379,22 +372,6 @@ body:not([data-theme="light"]) .portal-chat-greeting {
   background: #202d39 !important;
   border-color: #394754 !important;
   color: #d4dbe1 !important;
-}
-
-body:not([data-theme="light"]) .seoaia-sidebar {
-  background: #18232e !important;
-  border-color: #34414e !important;
-}
-
-body:not([data-theme="light"]) .seoaia-sidebar nav a i {
-  color: #aab6c1 !important;
-}
-
-body:not([data-theme="light"]) .seoaia-sidebar nav a:hover,
-body:not([data-theme="light"]) .seoaia-sidebar nav a.side-active {
-  background: #263442 !important;
-  border-color: #495866 !important;
-  box-shadow: inset 3px 0 #8293a4 !important;
 }
 
 body:not([data-theme="light"]) .quiz-mode-btn,
