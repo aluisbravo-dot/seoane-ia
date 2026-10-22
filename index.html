@@ -284,11 +284,33 @@
   <!-- Test / Cuestionario de Conocimientos -->
   <section id="seccion-quiz" class="section container">
     <div class="section-title">
-      <h2><i class="fa-solid fa-brain"></i> Test Vocacional y Evaluación de Conocimientos</h2>
-      <p>Descubre qué carrera se adapta mejor a tus aptitudes respondiendo este breve cuestionario interactivo.</p>
+      <span class="section-eyebrow">APRENDE A TU RITMO</span>
+      <h2><i class="fa-solid fa-brain"></i> Explora y pon a prueba tus conocimientos</h2>
+      <p>Elige una actividad: descubre tus intereses vocacionales o practica con preguntas de cultura general.</p>
     </div>
     <div id="quiz-container" class="quiz-box">
-      <button id="quiz-start" class="btn btn-primary btn-large"><i class="fa-solid fa-play"></i> Iniciar Test Vocacional</button>
+      <div class="quiz-setup" id="quiz-setup">
+        <div class="quiz-mode-list" role="group" aria-label="Tipo de cuestionario">
+          <button class="quiz-mode-btn is-selected" type="button" data-quiz-mode="vocacional" aria-pressed="true">
+            <i class="fa-solid fa-compass" aria-hidden="true"></i><span><strong>Test vocacional</strong><small>Explora carreras relacionadas con tus intereses.</small></span>
+          </button>
+          <button class="quiz-mode-btn" type="button" data-quiz-mode="cultura" aria-pressed="false">
+            <i class="fa-solid fa-earth-americas" aria-hidden="true"></i><span><strong>Cultura general</strong><small>Practica actualidad, ciudadanía, ciencia y más.</small></span>
+          </button>
+        </div>
+        <div class="quiz-topic-row" id="quiz-topic-row" hidden>
+          <label for="quiz-topic">Elige un tema</label>
+          <select id="quiz-topic">
+            <option value="Perú y ciudadanía">Perú y ciudadanía</option>
+            <option value="Ciencia y ambiente">Ciencia y ambiente</option>
+            <option value="Tecnología y cultura">Tecnología y cultura</option>
+            <option value="Historia y geografía">Historia y geografía</option>
+          </select>
+          <p>Las preguntas sobre autoridades pueden cambiar. Consulta el enlace oficial que aparece en la explicación.</p>
+        </div>
+        <button id="quiz-start" class="btn btn-primary btn-large"><i class="fa-solid fa-play"></i> Iniciar test vocacional</button>
+      </div>
+      <div id="quiz-stage" class="quiz-stage" aria-live="polite" hidden></div>
     </div>
   </section>
 

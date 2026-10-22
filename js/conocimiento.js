@@ -47,6 +47,30 @@ const QUIZ_PREGUNTAS = [
     { texto: "Trabajar en el laboratorio de calidad de una empresa", carrera: "quimica" } ] }
 ];
 
+// ---------------- CULTURA GENERAL (preguntas educativas y de actualidad) ----------------
+const QUIZ_CULTURA = [
+  { tema: "Perú y ciudadanía", pregunta: "Según la información oficial publicada en julio de 2026, ¿quién asumió la Presidencia de la República del Perú?", opciones: ["Dina Boluarte", "Keiko Fujimori", "María del Carmen Alva", "Mirtha Vásquez"], correcta: 1, explicacion: "La información oficial de la Presidencia informó sobre el primer Consejo de Ministros liderado por Keiko Fujimori. Los cargos públicos pueden cambiar; verifica la información vigente en la fuente oficial.", fuente: "https://www.gob.pe/institucion/presidencia/noticias" },
+  { tema: "Perú y ciudadanía", pregunta: "¿Cuál es la capital constitucional del Perú?", opciones: ["Cusco", "Arequipa", "Lima", "Trujillo"], correcta: 2, explicacion: "Lima es la capital del Perú." },
+  { tema: "Perú y ciudadanía", pregunta: "¿Qué institución organiza los procesos electorales en el Perú?", opciones: ["ONPE", "SUNAT", "INEI", "INDECOPI"], correcta: 0, explicacion: "La ONPE organiza y ejecuta los procesos electorales y las consultas populares." },
+  { tema: "Perú y ciudadanía", pregunta: "¿Cuántos poderes independientes reconoce la organización del Estado peruano?", opciones: ["Dos", "Tres", "Cuatro", "Cinco"], correcta: 1, explicacion: "Se reconocen los poderes Ejecutivo, Legislativo y Judicial." },
+  { tema: "Perú y ciudadanía", pregunta: "¿Qué océano baña la costa del Perú?", opciones: ["Atlántico", "Índico", "Pacífico", "Ártico"], correcta: 2, explicacion: "La costa peruana se encuentra junto al océano Pacífico." },
+  { tema: "Ciencia y ambiente", pregunta: "¿Qué gas absorben principalmente las plantas durante la fotosíntesis?", opciones: ["Oxígeno", "Dióxido de carbono", "Nitrógeno", "Helio"], correcta: 1, explicacion: "Las plantas usan dióxido de carbono, agua y energía solar para producir azúcares y liberar oxígeno." },
+  { tema: "Ciencia y ambiente", pregunta: "¿Cuál es el planeta más cercano al Sol?", opciones: ["Venus", "Marte", "Mercurio", "Júpiter"], correcta: 2, explicacion: "Mercurio es el planeta más cercano al Sol." },
+  { tema: "Ciencia y ambiente", pregunta: "¿A qué temperatura hierve el agua aproximadamente al nivel del mar?", opciones: ["50 °C", "80 °C", "100 °C", "120 °C"], correcta: 2, explicacion: "Al nivel del mar, el agua hierve cerca de los 100 °C; la altitud puede modificar ese valor." },
+  { tema: "Ciencia y ambiente", pregunta: "¿Qué órgano bombea la sangre por el cuerpo humano?", opciones: ["Pulmón", "Hígado", "Corazón", "Riñón"], correcta: 2, explicacion: "El corazón impulsa la sangre a través del sistema circulatorio." },
+  { tema: "Ciencia y ambiente", pregunta: "¿Cuál de estas fuentes de energía es renovable?", opciones: ["Carbón", "Petróleo", "Solar", "Gas natural"], correcta: 2, explicacion: "La energía solar proviene de una fuente que se renueva naturalmente." },
+  { tema: "Tecnología y cultura", pregunta: "¿Qué significa la sigla CPU en una computadora?", opciones: ["Unidad Central de Procesamiento", "Control Personal de Usuario", "Conexión Principal Universal", "Código de Programa Único"], correcta: 0, explicacion: "CPU significa Unidad Central de Procesamiento; ejecuta instrucciones de los programas." },
+  { tema: "Tecnología y cultura", pregunta: "¿Cuál es una buena práctica para proteger tus cuentas en internet?", opciones: ["Usar la misma clave en todas partes", "Compartir la clave con amistades", "Activar la verificación en dos pasos", "Publicar la clave en un mensaje"], correcta: 2, explicacion: "La verificación en dos pasos agrega una capa de seguridad además de la contraseña." },
+  { tema: "Tecnología y cultura", pregunta: "¿Qué formato se usa habitualmente para compartir documentos conservando su diseño?", opciones: ["PDF", "MP3", "PNG", "CSV"], correcta: 0, explicacion: "PDF permite compartir documentos conservando de forma consistente su presentación." },
+  { tema: "Tecnología y cultura", pregunta: "¿Qué componente almacena temporalmente los datos que usa una computadora mientras está encendida?", opciones: ["Memoria RAM", "Monitor", "Teclado", "Impresora"], correcta: 0, explicacion: "La memoria RAM guarda temporalmente datos e instrucciones en uso; su contenido se pierde al apagar el equipo." },
+  { tema: "Tecnología y cultura", pregunta: "¿Qué instrumento permite medir la temperatura?", opciones: ["Barómetro", "Termómetro", "Brújula", "Dinamómetro"], correcta: 1, explicacion: "El termómetro sirve para medir la temperatura." },
+  { tema: "Historia y geografía", pregunta: "¿En qué continente se encuentra el Perú?", opciones: ["Asia", "Europa", "América del Sur", "África"], correcta: 2, explicacion: "El Perú está ubicado en América del Sur." },
+  { tema: "Historia y geografía", pregunta: "¿Cuál fue la capital del Imperio inca?", opciones: ["Lima", "Cusco", "Quito", "Puno"], correcta: 1, explicacion: "Cusco fue el centro político y administrativo del Imperio inca." },
+  { tema: "Historia y geografía", pregunta: "¿Qué cordillera atraviesa gran parte del territorio peruano?", opciones: ["Los Alpes", "Los Andes", "El Himalaya", "Los Urales"], correcta: 1, explicacion: "La cordillera de los Andes atraviesa el territorio peruano de norte a sur." },
+  { tema: "Historia y geografía", pregunta: "¿Qué lengua originaria es, junto con el castellano, idioma oficial donde predomina?", opciones: ["Quechua", "Italiano", "Francés", "Alemán"], correcta: 0, explicacion: "El quechua es idioma oficial en las zonas donde predomina, de acuerdo con la Constitución peruana." },
+  { tema: "Historia y geografía", pregunta: "¿Qué ciudadela inca es Patrimonio Mundial de la UNESCO?", opciones: ["Chan Chan", "Machu Picchu", "Caral", "Kuélap"], correcta: 1, explicacion: "El Santuario Histórico de Machu Picchu forma parte del Patrimonio Mundial." }
+];
+
 // ---------------- BALOTARIO (preguntas y respuestas de estudio) ----------------
 // cat: etica | comunicacion | empresas | carrera | ia
 const BALOTARIO = [

@@ -237,6 +237,7 @@ function initMascotVoice() {
 function initAudioReferencia() {
   const button = $("voice-reference-play"), audio = $("voice-reference-audio"), status = $("voice-status");
   if (!button || !audio) return;
+  let audioContext = null;
   const render = playing => {
     button.setAttribute("aria-pressed", String(playing));
     button.innerHTML = playing
@@ -252,10 +253,30 @@ function initAudioReferencia() {
       return;
     }
     try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        if (!audioContext) {
+          audioContext = new AudioContextClass();
+          const source = audioContext.createMediaElementSource(audio);
+          const gain = audioContext.createGain();
+          const limiter = audioContext.createDynamicsCompressor();
+          gain.gain.value = 2;
+          limiter.threshold.value = -6;
+          limiter.knee.value = 3;
+          limiter.ratio.value = 12;
+          limiter.attack.value = 0.003;
+          limiter.release.value = 0.2;
+          source.connect(gain);
+          gain.connect(limiter);
+          limiter.connect(audioContext.destination);
+        }
+        await audioContext.resume();
+      }
+      audio.volume = 1;
       audio.currentTime = 0;
       await audio.play();
       render(true);
-      if (status) status.textContent = "Reproduciendo el audio original enviado. No cambia la voz de lectura.";
+      if (status) status.textContent = "Reproduciendo el audio original con volumen amplificado. No cambia la voz de lectura.";
     } catch (error) {
       console.warn("No se pudo reproducir el audio original.", error);
       render(false);
@@ -327,25 +348,97 @@ function initChat() {
 const bienvenida = () => "<p>¡Hola! Soy <strong>SeoaneBot</strong>, la inteligencia artificial del IESTP Manuel Seoane Corrales. Puedo hablarte de las <strong>7 carreras</strong> (mallas, empleo, si le conviene a tu hijo/a), de <strong>admisión</strong>, y también de <strong>cualquier otro tema</strong>: tareas, matemáticas, tecnología, ética, cultura general. También puedes adjuntar fotos, PDF o archivos de texto 📎</p>";
 
 // ---------- Test vocacional ----------
-let currentQuestionIndex = 0, scoreMap = {};
+let currentQuestionIndex = 0, scoreMap = {}, quizMode = "vocacional";
+let culturaPreguntasActuales = [], culturaPuntaje = 0, culturaRespondida = false;
 function initQuiz() {
-  const s = $("quiz-start"); if (!s) return;
-  s.onclick = () => { currentQuestionIndex = 0; scoreMap = {}; mostrarPreguntaQuiz(); };
+  const start = $("quiz-start"), setup = $("quiz-setup"), stage = $("quiz-stage");
+  if (!start || !setup || !stage) return;
+  document.querySelectorAll("[data-quiz-mode]").forEach(button => button.addEventListener("click", () => {
+    quizMode = button.dataset.quizMode;
+    document.querySelectorAll("[data-quiz-mode]").forEach(option => {
+      const selected = option === button;
+      option.classList.toggle("is-selected", selected);
+      option.setAttribute("aria-pressed", String(selected));
+    });
+    $("quiz-topic-row").hidden = quizMode !== "cultura";
+    start.innerHTML = `<i class="fa-solid fa-play"></i> Iniciar ${quizMode === "cultura" ? "práctica de cultura general" : "test vocacional"}`;
+  }));
+  start.onclick = iniciarQuiz;
+}
+function iniciarQuiz() {
+  currentQuestionIndex = 0;
+  scoreMap = {};
+  culturaPuntaje = 0;
+  culturaRespondida = false;
+  $("quiz-setup").hidden = true;
+  $("quiz-stage").hidden = false;
+  if (quizMode === "cultura") {
+    const topic = $("quiz-topic").value;
+    culturaPreguntasActuales = QUIZ_CULTURA.filter(q => q.tema === topic);
+    for (let i = culturaPreguntasActuales.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [culturaPreguntasActuales[i], culturaPreguntasActuales[j]] = [culturaPreguntasActuales[j], culturaPreguntasActuales[i]];
+    }
+    culturaPreguntasActuales = culturaPreguntasActuales.slice(0, 5);
+  }
+  mostrarPreguntaQuiz();
 }
 function mostrarPreguntaQuiz() {
-  const c = $("quiz-container");
+  if (quizMode === "cultura") return mostrarPreguntaCultura();
+  const c = $("quiz-stage");
   if (currentQuestionIndex >= QUIZ_PREGUNTAS.length) return mostrarResultadoQuiz();
   const q = QUIZ_PREGUNTAS[currentQuestionIndex];
-  c.innerHTML = `<h3>Pregunta ${currentQuestionIndex + 1} de ${QUIZ_PREGUNTAS.length}</h3>
-    <p style="font-size:1.2rem;margin:20px 0;">${q.pregunta}</p>
-    <div>${q.opciones.map((o, i) => `<button class="quiz-option-btn" onclick="responderQuiz('${o.carrera}')">${i + 1}. ${o.texto}</button>`).join("")}</div>`;
+  c.innerHTML = `<div class="quiz-progress" role="progressbar" aria-label="Progreso del test" aria-valuenow="${currentQuestionIndex + 1}" aria-valuemin="1" aria-valuemax="${QUIZ_PREGUNTAS.length}"><span style="width:${((currentQuestionIndex + 1) / QUIZ_PREGUNTAS.length) * 100}%"></span></div>
+    <p class="quiz-count">Pregunta ${currentQuestionIndex + 1} de ${QUIZ_PREGUNTAS.length}</p>
+    <h3 class="quiz-question">${esc(q.pregunta)}</h3>
+    <div class="quiz-options">${q.opciones.map((o, i) => `<button class="quiz-option-btn" type="button" data-carrera="${esc(o.carrera)}">${i + 1}. ${esc(o.texto)}</button>`).join("")}</div>`;
+  c.querySelectorAll("[data-carrera]").forEach(button => button.addEventListener("click", () => responderQuiz(button.dataset.carrera)));
 }
 function responderQuiz(id) { scoreMap[id] = (scoreMap[id] || 0) + 1; currentQuestionIndex++; mostrarPreguntaQuiz(); }
+function mostrarPreguntaCultura() {
+  const c = $("quiz-stage");
+  if (currentQuestionIndex >= culturaPreguntasActuales.length) return mostrarResultadoCultura();
+  const q = culturaPreguntasActuales[currentQuestionIndex];
+  culturaRespondida = false;
+  c.innerHTML = `<div class="quiz-progress" role="progressbar" aria-label="Progreso de la práctica" aria-valuenow="${currentQuestionIndex + 1}" aria-valuemin="1" aria-valuemax="${culturaPreguntasActuales.length}"><span style="width:${((currentQuestionIndex + 1) / culturaPreguntasActuales.length) * 100}%"></span></div>
+    <p class="quiz-count">${esc(q.tema)} · Pregunta ${currentQuestionIndex + 1} de ${culturaPreguntasActuales.length}</p>
+    <h3 class="quiz-question">${esc(q.pregunta)}</h3>
+    <div class="quiz-options">${q.opciones.map((option, i) => `<button class="quiz-option-btn" type="button" data-respuesta="${i}">${i + 1}. ${esc(option)}</button>`).join("")}</div>
+    <div class="quiz-feedback" id="quiz-feedback" aria-live="polite"></div>`;
+  c.querySelectorAll("[data-respuesta]").forEach(button => button.addEventListener("click", () => responderCultura(Number(button.dataset.respuesta))));
+}
+function responderCultura(respuesta) {
+  if (culturaRespondida) return;
+  culturaRespondida = true;
+  const q = culturaPreguntasActuales[currentQuestionIndex];
+  const buttons = $("quiz-stage").querySelectorAll("[data-respuesta]");
+  buttons.forEach((button, i) => {
+    button.disabled = true;
+    if (i === q.correcta) button.classList.add("is-correct");
+    else if (i === respuesta) button.classList.add("is-incorrect");
+  });
+  const correcta = respuesta === q.correcta;
+  if (correcta) culturaPuntaje++;
+  $("quiz-feedback").innerHTML = `<p class="${correcta ? "quiz-feedback-correct" : "quiz-feedback-incorrect"}"><strong>${correcta ? "¡Correcto!" : "No era esa opción."}</strong> ${esc(q.explicacion)}</p>
+    ${q.fuente ? `<a class="quiz-source" href="${q.fuente}" target="_blank" rel="noopener">Ver fuente oficial <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ""}
+    <button class="btn btn-primary" id="quiz-next" type="button">${currentQuestionIndex + 1 === culturaPreguntasActuales.length ? "Ver resultado" : "Siguiente pregunta"} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>`;
+  $("quiz-next").addEventListener("click", () => { currentQuestionIndex++; mostrarPreguntaQuiz(); });
+}
+function mostrarResultadoCultura() {
+  const total = culturaPreguntasActuales.length;
+  $("quiz-stage").innerHTML = `<div class="quiz-result-icon"><i class="fa-solid fa-award" aria-hidden="true"></i></div>
+    <p class="quiz-count">${esc(culturaPreguntasActuales[0]?.tema || "Cultura general")}</p>
+    <h3 class="quiz-question">Obtuviste ${culturaPuntaje} de ${total} respuestas correctas</h3>
+    <p class="quiz-result-copy">${culturaPuntaje === total ? "¡Excelente! Tienes muy buen dominio de este tema." : culturaPuntaje >= 3 ? "¡Buen trabajo! Sigue repasando para aprender aún más." : "Cada pregunta es una oportunidad para aprender. ¡Inténtalo otra vez!"}</p>
+    <div class="quiz-result-actions"><button class="btn btn-primary" id="quiz-repeat" type="button"><i class="fa-solid fa-rotate"></i> Repetir práctica</button><button class="btn btn-secondary" id="quiz-change" type="button">Elegir otra actividad</button></div>`;
+  $("quiz-repeat").addEventListener("click", iniciarQuiz);
+  $("quiz-change").addEventListener("click", reiniciarSeleccionQuiz);
+}
 function mostrarResultadoQuiz() {
   const orden = Object.entries(scoreMap).sort((a, b) => b[1] - a[1]);
   const top = CARRERAS_DATA.find(c => c.id === (orden[0] || ["dsi"])[0]) || CARRERAS_DATA[0];
   const segunda = orden[1] && orden[1][1] === orden[0][1] ? CARRERAS_DATA.find(c => c.id === orden[1][0]) : null;
-  $("quiz-container").innerHTML = `
+  $("quiz-stage").innerHTML = `
     <div class="quiz-char" id="quiz-char"></div>
     <h2>¡Resultado de tu Test Vocacional!</h2>
     <p style="margin:12px 0;">Según tus respuestas, la carrera que más encaja contigo es:</p>
@@ -353,11 +446,15 @@ function mostrarResultadoQuiz() {
     ${segunda ? `<p style="color:var(--text-muted)">También encajas con: <strong>${segunda.nombre}</strong></p>` : ""}
     <p style="color:var(--text-muted);margin:12px 0 20px;">${top.resumen}</p>
     <button class="btn btn-primary" onclick="verDetalleCarrera('${top.id}')"><i class="fa-solid fa-eye"></i> Ver malla y detalles</button>
-    <button class="btn btn-secondary" onclick="initQuizReiniciar()"><i class="fa-solid fa-rotate"></i> Repetir</button>
+    <button class="btn btn-secondary" id="quiz-repeat"><i class="fa-solid fa-rotate"></i> Repetir</button>
     <p class="aviso" style="margin-top:14px;">Este test es orientativo: no reemplaza hablar con tu familia ni conocer el instituto.</p>`;
+  $("quiz-repeat").addEventListener("click", iniciarQuiz);
   montarPersonaje($("quiz-char"), top);
 }
-function initQuizReiniciar() { currentQuestionIndex = 0; scoreMap = {}; mostrarPreguntaQuiz(); }
+function reiniciarSeleccionQuiz() {
+  $("quiz-stage").hidden = true;
+  $("quiz-setup").hidden = false;
+}
 
 // ---------- Tema y PWA ----------
 function initTheme() {
